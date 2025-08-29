@@ -2,7 +2,7 @@ export interface Product {
   id: string;
   name: string;
   stock: number;
-  threshold: number;
+  lowStockThreshold: number;
   historicalData: string;
   // Optional fields from user data
   category?: string;

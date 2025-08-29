@@ -12,7 +12,7 @@ interface EditProductDialogProps {
 }
 
 export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange }: EditProductDialogProps) {
-  const handleSubmit = (values: Omit<Product, "id" | "historicalData">) => {
+  const handleSubmit = (values: {name: string, stock: number, lowStockThreshold: number}) => {
     onUpdateProduct({ ...values, id: product.id, historicalData: product.historicalData });
   };
 

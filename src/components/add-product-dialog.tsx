@@ -13,7 +13,7 @@ interface AddProductDialogProps {
 export function AddProductDialog({ children, onAddProduct }: AddProductDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const handleSubmit = (values: Omit<Product, "id" | "historicalData">) => {
+  const handleSubmit = (values: {name: string, stock: number, lowStockThreshold: number}) => {
     onAddProduct(values);
     setOpen(false);
   };

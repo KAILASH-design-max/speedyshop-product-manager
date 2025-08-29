@@ -18,8 +18,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast }: ProductCardProps) {
-  const isLowStock = product.stock <= product.threshold;
-  const stockPercentage = Math.min((product.stock / (product.threshold * 2)) * 100, 100);
+  const isLowStock = product.stock <= product.lowStockThreshold;
+  const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
 
   return (
     <Card className={cn("flex flex-col", isLowStock && "border-destructive")}>
@@ -56,8 +56,8 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
         </div>
         <div>
             <div className="text-xs text-muted-foreground flex justify-between mb-1">
-                <span>Threshold: {product.threshold}</span>
-                <span>Target: {product.threshold * 2}</span>
+                <span>Threshold: {product.lowStockThreshold}</span>
+                <span>Target: {product.lowStockThreshold * 2}</span>
             </div>
             <Progress value={stockPercentage} className={isLowStock ? "[&>div]:bg-destructive" : ""} />
         </div>

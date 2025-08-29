@@ -12,7 +12,7 @@ import type { Product } from "@/lib/types";
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
-  threshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
+  lowStockThreshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -29,7 +29,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     defaultValues: {
       name: defaultValues?.name ?? "",
       stock: defaultValues?.stock ?? 0,
-      threshold: defaultValues?.threshold ?? 10,
+      lowStockThreshold: defaultValues?.lowStockThreshold ?? 10,
     },
   });
 
@@ -65,7 +65,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           />
           <FormField
             control={form.control}
-            name="threshold"
+            name="lowStockThreshold"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Low Stock Threshold</FormLabel>

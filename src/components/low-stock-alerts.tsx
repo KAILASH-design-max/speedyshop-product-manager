@@ -10,7 +10,7 @@ interface LowStockAlertsProps {
 }
 
 export function LowStockAlerts({ products }: LowStockAlertsProps) {
-  const lowStockItems = products.filter((p) => p.stock <= p.threshold);
+  const lowStockItems = products.filter((p) => p.stock <= p.lowStockThreshold);
 
   return (
     <Card className="col-span-1 lg:col-span-2">
