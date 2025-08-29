@@ -20,3 +20,11 @@ export interface Product {
   createdAt?: any; // Using `any` for Firebase Timestamp flexibility
   updatedAt?: any; // Using `any` for Firebase Timestamp flexibility
 }
+
+export interface UserProfile {
+  uid: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'viewer';
+  createdAt?: any;
+}

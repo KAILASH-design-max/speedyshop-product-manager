@@ -15,9 +15,10 @@ interface ProductCardProps {
   onDelete: () => void;
   onUpdateStock: () => void;
   onForecast: () => void;
+  isViewer: boolean;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, isViewer }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
 
@@ -28,18 +29,20 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
           <CardTitle className="text-lg">{product.name}</CardTitle>
           <CardDescription>ID: {product.id}</CardDescription>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onEdit}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={onForecast}><TrendingUp className="mr-2 h-4 w-4" />Forecast</DropdownMenuItem>
-            <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!isViewer && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEdit}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={onForecast}><TrendingUp className="mr-2 h-4 w-4" />Forecast</DropdownMenuItem>
+              <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </CardHeader>
       <CardContent className="flex-grow space-y-4">
         <div className="flex items-center justify-between">
@@ -63,7 +66,7 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={onUpdateStock}>Update Stock</Button>
+        <Button className="w-full" onClick={onUpdateStock} disabled={isViewer}>Update Stock</Button>
       </CardFooter>
     </Card>
   );

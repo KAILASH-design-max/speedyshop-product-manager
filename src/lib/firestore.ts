@@ -7,12 +7,15 @@ import {
   updateDoc,
   deleteDoc,
   serverTimestamp,
+  getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product } from "./types";
+import type { Product, UserProfile } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
+const usersCollection = collection(db, "users");
 
 // GET all products
 export async function getProducts(): Promise<Product[]> {
@@ -57,4 +60,23 @@ export async function updateProduct(
 export async function deleteProduct(productId: string): Promise<void> {
   const productDoc = doc(db, "products", productId);
   await deleteDoc(productDoc);
+}
+
+// ADD a new user profile
+export async function addUser(userData: UserProfile): Promise<void> {
+  const userDoc = doc(db, "users", userData.uid);
+  await setDoc(userDoc, {
+    ...userData,
+    createdAt: serverTimestamp(),
+  });
+}
+
+// GET user profile
+export async function getUserProfile(uid: string): Promise<UserProfile | null> {
+  const userDoc = doc(db, "users", uid);
+  const docSnap = await getDoc(userDoc);
+  if (docSnap.exists()) {
+    return docSnap.data() as UserProfile;
+  }
+  return null;
 }

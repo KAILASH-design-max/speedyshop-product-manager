@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { PlusCircle } from "lucide-react";
 
-import type { Product } from "@/lib/types";
+import type { Product, UserProfile } from "@/lib/types";
 import {
   addProduct,
   deleteProduct,
   getProducts,
+  getUserProfile,
   updateProduct,
 } from "@/lib/firestore";
 import { Header } from "@/components/header";
@@ -20,8 +21,11 @@ import { EditProductDialog } from "./edit-product-dialog";
 import { DeleteProductAlert } from "./delete-product-alert";
 import { UpdateStockDialog } from "./update-stock-dialog";
 import { StockForecastingDialog } from "./stock-forecasting-dialog";
+import { useAuth } from "@/hooks/use-auth";
 
 export function InventoryDashboard() {
+  const { user } = useAuth();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -29,23 +33,32 @@ export function InventoryDashboard() {
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
   const [forecastingProduct, setForecastingProduct] = useState<Product | null>(null);
 
+  const isViewer = userProfile?.role === 'viewer';
+
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchData() {
+      if (!user) return;
       try {
-        const productsFromDb = await getProducts();
+        setLoading(true);
+        const [productsFromDb, profile] = await Promise.all([
+          getProducts(),
+          getUserProfile(user.uid)
+        ]);
         setProducts(productsFromDb);
+        setUserProfile(profile);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     }
-    fetchProducts();
-  }, []);
+    fetchData();
+  }, [user]);
 
   const handleAddProduct = async (
     newProductData: Omit<Product, "id" | "historicalData">
   ) => {
+    if (isViewer) return;
     try {
       const newProduct = await addProduct(newProductData);
       setProducts((prev) => [...prev, newProduct]);
@@ -55,6 +68,7 @@ export function InventoryDashboard() {
   };
 
   const handleUpdateProduct = async (updatedProduct: Product) => {
+    if (isViewer) return;
     try {
       await updateProduct(updatedProduct.id, updatedProduct);
       setProducts((prev) =>
@@ -67,6 +81,7 @@ export function InventoryDashboard() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
+    if (isViewer) return;
     try {
       await deleteProduct(productId);
       setProducts((prev) => prev.filter((p) => p.id !== productId));
@@ -77,6 +92,7 @@ export function InventoryDashboard() {
   };
 
   const handleUpdateStock = async (productId: string, newStock: number) => {
+    if (isViewer) return;
     const productToUpdate = products.find((p) => p.id === productId);
     if (!productToUpdate) return;
 
@@ -115,12 +131,14 @@ export function InventoryDashboard() {
         <div className="grid gap-8">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Inventory</h1>
-            <AddProductDialog onAddProduct={handleAddProduct}>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Product
-              </Button>
-            </AddProductDialog>
+            {!isViewer && (
+              <AddProductDialog onAddProduct={handleAddProduct}>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Product
+                </Button>
+              </AddProductDialog>
+            )}
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -142,6 +160,7 @@ export function InventoryDashboard() {
                     onDelete={() => setDeletingProduct(product)}
                     onUpdateStock={() => setUpdatingStockProduct(product)}
                     onForecast={() => setForecastingProduct(product)}
+                    isViewer={isViewer}
                   />
                 ))}
               </div>
@@ -174,6 +193,7 @@ export function InventoryDashboard() {
           onUpdateStock={handleUpdateStock}
           open={!!updatingStockProduct}
           onOpenChange={(isOpen) => !isOpen && setUpdatingStockProduct(null)}
+          isViewer={isViewer}
         />
       )}
 
