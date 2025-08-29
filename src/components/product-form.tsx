@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { getAIProductDescription } from "@/app/actions";
+import { getAIProductDescription, getAIProductCategory } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -38,7 +38,8 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
+  const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<ProductFormValues>({
@@ -69,7 +70,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       return;
     }
 
-    setIsGenerating(true);
+    setIsGeneratingDesc(true);
     try {
       const result = await getAIProductDescription({
         productName: name,
@@ -83,9 +84,41 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         description: "Could not generate a description. Please try again.",
       });
     } finally {
-      setIsGenerating(false);
+      setIsGeneratingDesc(false);
     }
   };
+
+  const handleGenerateCategory = async () => {
+    const { name } = form.getValues();
+    if (!name) {
+      toast({
+        variant: "destructive",
+        title: "Missing Product Name",
+        description: "Please enter a Product Name first to generate categories.",
+      });
+      return;
+    }
+
+    setIsGeneratingCategory(true);
+    try {
+      const result = await getAIProductCategory({ productName: name });
+      if (result.category) {
+        form.setValue("category", result.category, { shouldValidate: true });
+      }
+      if (result.subcategory) {
+        form.setValue("subcategory", result.subcategory, { shouldValidate: true });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Generation Failed",
+        description: "Could not generate categories. Please try again.",
+      });
+    } finally {
+      setIsGeneratingCategory(false);
+    }
+  };
+
 
   return (
     <Form {...form}>
@@ -103,13 +136,26 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             </FormItem>
           )}
         />
+        
+        <div className="flex items-center justify-between">
+            <FormLabel>Category & Subcategory</FormLabel>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleGenerateCategory}
+              disabled={isGeneratingCategory}
+            >
+              <Sparkles className="mr-2 h-4 w-4" />
+              {isGeneratingCategory ? "Generating..." : "Generate with AI"}
+            </Button>
+          </div>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Category</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., Fruits & Vegetables" {...field} />
                 </FormControl>
@@ -122,7 +168,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             name="subcategory"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Subcategory</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., Fresh Vegetables" {...field} />
                 </FormControl>
@@ -248,10 +293,10 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
                   variant="ghost"
                   size="sm"
                   onClick={handleGenerateDescription}
-                  disabled={isGenerating}
+                  disabled={isGeneratingDesc}
                 >
                   <Sparkles className="mr-2 h-4 w-4" />
-                  {isGenerating ? "Generating..." : "Generate with AI"}
+                  {isGeneratingDesc ? "Generating..." : "Generate with AI"}
                 </Button>
               </div>
               <FormControl>

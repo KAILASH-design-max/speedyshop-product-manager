@@ -4,6 +4,8 @@ import { forecastStock } from "@/ai/flows/stock-forecasting";
 import type { ForecastStockInput, ForecastStockOutput } from "@/ai/flows/stock-forecasting";
 import { generateProductDescription } from "@/ai/flows/generate-product-description";
 import type { GenerateProductDescriptionInput, GenerateProductDescriptionOutput } from "@/ai/flows/generate-product-description";
+import { generateProductCategory } from "@/ai/flows/generate-product-category";
+import type { GenerateProductCategoryInput, GenerateProductCategoryOutput } from "@/ai/flows/generate-product-category";
 
 
 export async function getStockForecast(
@@ -33,6 +35,21 @@ export async function getAIProductDescription(
     console.error("Error in getAIProductDescription:", error);
     return {
       description: "Sorry, we couldn't generate a description at this time. Please try again.",
+    };
+  }
+}
+
+export async function getAIProductCategory(
+  input: GenerateProductCategoryInput
+): Promise<GenerateProductCategoryOutput> {
+  try {
+    const result = await generateProductCategory(input);
+    return result;
+  } catch (error) {
+    console.error("Error in getAIProductCategory:", error);
+    return {
+      category: "",
+      subcategory: "",
     };
   }
 }
