@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { getAIProductDescription, getAIProductCategory } from "@/app/actions";
+import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
@@ -40,6 +40,7 @@ interface ProductFormProps {
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
+  const [isGeneratingName, setIsGeneratingName] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<ProductFormValues>({
@@ -119,6 +120,34 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     }
   };
 
+  const handleGenerateName = async () => {
+    const { category, description } = form.getValues();
+    if (!category) {
+      toast({
+        variant: "destructive",
+        title: "Missing Category",
+        description: "Please enter a Category first to generate a name.",
+      });
+      return;
+    }
+
+    setIsGeneratingName(true);
+    try {
+      const result = await getAIProductName({ category, description });
+      if (result.productName) {
+        form.setValue("name", result.productName, { shouldValidate: true });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Generation Failed",
+        description: "Could not generate a product name. Please try again.",
+      });
+    } finally {
+      setIsGeneratingName(false);
+    }
+  };
+
 
   return (
     <Form {...form}>
@@ -128,7 +157,19 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Name</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Product Name</FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGenerateName}
+                  disabled={isGeneratingName}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {isGeneratingName ? "Generating..." : "Generate with AI"}
+                </Button>
+              </div>
               <FormControl>
                 <Input placeholder="e.g., Classic T-Shirt" {...field} />
               </FormControl>
