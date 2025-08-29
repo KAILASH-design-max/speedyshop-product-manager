@@ -4,7 +4,6 @@ export interface Product {
   stock: number;
   lowStockThreshold: number;
   historicalData: string;
-  // Optional fields from user data
   category?: string;
   cost?: number;
   description?: string;
@@ -13,7 +12,7 @@ export interface Product {
   originalPrice?: number;
   popularity?: number;
   price?: number;
-  status?: string;
+  status?: 'active' | 'inactive';
   subcategory?: string;
   supplierId?: string;
   supplierName?: string | null;

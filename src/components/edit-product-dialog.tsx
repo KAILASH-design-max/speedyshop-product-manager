@@ -1,8 +1,9 @@
 "use client";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ProductForm } from "./product-form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ProductForm, type ProductFormValues } from "./product-form";
 import type { Product } from "@/lib/types";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface EditProductDialogProps {
   product: Product;
@@ -12,17 +13,22 @@ interface EditProductDialogProps {
 }
 
 export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange }: EditProductDialogProps) {
-  const handleSubmit = (values: {name: string, stock: number, lowStockThreshold: number}) => {
-    onUpdateProduct({ ...values, id: product.id, historicalData: product.historicalData });
+  const handleSubmit = (values: ProductFormValues) => {
+    onUpdateProduct({ ...product, ...values });
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Edit {product.name}</DialogTitle>
+           <DialogDescription>
+            Update the product details below. Click save when you're done.
+          </DialogDescription>
         </DialogHeader>
-        <ProductForm onSubmit={handleSubmit} defaultValues={product} buttonText="Save Changes" />
+        <ScrollArea className="max-h-[70vh] pr-6">
+          <ProductForm onSubmit={handleSubmit} defaultValues={product} buttonText="Save Changes" />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

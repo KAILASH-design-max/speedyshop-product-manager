@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ProductForm } from "./product-form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ProductForm, type ProductFormValues } from "./product-form";
 import type { Product } from "@/lib/types";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface AddProductDialogProps {
   children: React.ReactNode;
@@ -13,7 +14,7 @@ interface AddProductDialogProps {
 export function AddProductDialog({ children, onAddProduct }: AddProductDialogProps) {
   const [open, setOpen] = useState(false);
 
-  const handleSubmit = (values: {name: string, stock: number, lowStockThreshold: number}) => {
+  const handleSubmit = (values: ProductFormValues) => {
     onAddProduct(values);
     setOpen(false);
   };
@@ -21,11 +22,16 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to add a new product to your inventory.
+          </DialogDescription>
         </DialogHeader>
-        <ProductForm onSubmit={handleSubmit} buttonText="Add Product" />
+        <ScrollArea className="max-h-[70vh] pr-6">
+          <ProductForm onSubmit={handleSubmit} buttonText="Add Product" />
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
