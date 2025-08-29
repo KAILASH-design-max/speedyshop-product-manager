@@ -22,7 +22,7 @@ const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-  role: z.enum(["admin", "viewer"], { required_error: "Please select a role." }),
+  role: z.enum(["admin", "viewer", "inventory-manager"], { required_error: "Please select a role." }),
 });
 
 type SignUpFormValues = z.infer<typeof formSchema>;
@@ -144,6 +144,7 @@ export default function SignUpPage() {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="inventory-manager">Inventory Manager</SelectItem>
                         <SelectItem value="viewer">Viewer</SelectItem>
                       </SelectContent>
                     </Select>

@@ -33,7 +33,7 @@ export function InventoryDashboard() {
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
   const [forecastingProduct, setForecastingProduct] = useState<Product | null>(null);
 
-  const isViewer = userProfile?.role === 'viewer';
+  const hasWriteAccess = userProfile?.role === 'admin' || userProfile?.role === 'inventory-manager';
 
   useEffect(() => {
     async function fetchData() {
@@ -58,7 +58,7 @@ export function InventoryDashboard() {
   const handleAddProduct = async (
     newProductData: Omit<Product, "id" | "historicalData">
   ) => {
-    if (isViewer) return;
+    if (!hasWriteAccess) return;
     try {
       const newProduct = await addProduct(newProductData);
       setProducts((prev) => [...prev, newProduct]);
@@ -68,7 +68,7 @@ export function InventoryDashboard() {
   };
 
   const handleUpdateProduct = async (updatedProduct: Product) => {
-    if (isViewer) return;
+    if (!hasWriteAccess) return;
     try {
       await updateProduct(updatedProduct.id, updatedProduct);
       setProducts((prev) =>
@@ -81,7 +81,7 @@ export function InventoryDashboard() {
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (isViewer) return;
+    if (!hasWriteAccess) return;
     try {
       await deleteProduct(productId);
       setProducts((prev) => prev.filter((p) => p.id !== productId));
@@ -92,7 +92,7 @@ export function InventoryDashboard() {
   };
 
   const handleUpdateStock = async (productId: string, newStock: number) => {
-    if (isViewer) return;
+    if (!hasWriteAccess) return;
     const productToUpdate = products.find((p) => p.id === productId);
     if (!productToUpdate) return;
 
@@ -131,7 +131,7 @@ export function InventoryDashboard() {
         <div className="grid gap-8">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Inventory</h1>
-            {!isViewer && (
+            {hasWriteAccess && (
               <AddProductDialog onAddProduct={handleAddProduct}>
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" />
@@ -160,7 +160,7 @@ export function InventoryDashboard() {
                     onDelete={() => setDeletingProduct(product)}
                     onUpdateStock={() => setUpdatingStockProduct(product)}
                     onForecast={() => setForecastingProduct(product)}
-                    isViewer={isViewer}
+                    hasWriteAccess={hasWriteAccess}
                   />
                 ))}
               </div>
@@ -193,7 +193,7 @@ export function InventoryDashboard() {
           onUpdateStock={handleUpdateStock}
           open={!!updatingStockProduct}
           onOpenChange={(isOpen) => !isOpen && setUpdatingStockProduct(null)}
-          isViewer={isViewer}
+          hasWriteAccess={hasWriteAccess}
         />
       )}
 

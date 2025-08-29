@@ -25,6 +25,6 @@ export interface UserProfile {
   uid: string;
   name: string;
   email: string;
-  role: 'admin' | 'viewer';
+  role: 'admin' | 'viewer' | 'inventory-manager';
   createdAt?: any;
 }

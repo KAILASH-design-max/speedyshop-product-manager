@@ -14,7 +14,7 @@ interface UpdateStockDialogProps {
   onUpdateStock: (productId: string, newStock: number) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isViewer: boolean;
+  hasWriteAccess: boolean;
 }
 
 const formSchema = z.object({
@@ -23,7 +23,7 @@ const formSchema = z.object({
 
 type UpdateStockFormValues = z.infer<typeof formSchema>;
 
-export function UpdateStockDialog({ product, onUpdateStock, open, onOpenChange, isViewer }: UpdateStockDialogProps) {
+export function UpdateStockDialog({ product, onUpdateStock, open, onOpenChange, hasWriteAccess }: UpdateStockDialogProps) {
   const form = useForm<UpdateStockFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { stock: product.stock },
@@ -51,13 +51,13 @@ export function UpdateStockDialog({ product, onUpdateStock, open, onOpenChange, 
                 <FormItem>
                   <FormLabel>New Stock Quantity</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="0" {...field} disabled={isViewer} />
+                    <Input type="number" placeholder="0" {...field} disabled={!hasWriteAccess} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isViewer}>Update Stock</Button>
+            <Button type="submit" className="w-full" disabled={!hasWriteAccess}>Update Stock</Button>
           </form>
         </Form>
       </DialogContent>

@@ -15,10 +15,10 @@ interface ProductCardProps {
   onDelete: () => void;
   onUpdateStock: () => void;
   onForecast: () => void;
-  isViewer: boolean;
+  hasWriteAccess: boolean;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, isViewer }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, hasWriteAccess }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
 
@@ -29,7 +29,7 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
           <CardTitle className="text-lg">{product.name}</CardTitle>
           <CardDescription>ID: {product.id}</CardDescription>
         </div>
-        {!isViewer && (
+        {hasWriteAccess && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -66,7 +66,7 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full" onClick={onUpdateStock} disabled={isViewer}>Update Stock</Button>
+        <Button className="w-full" onClick={onUpdateStock} disabled={!hasWriteAccess}>Update Stock</Button>
       </CardFooter>
     </Card>
   );
