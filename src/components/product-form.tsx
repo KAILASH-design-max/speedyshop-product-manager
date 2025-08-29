@@ -3,6 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { Sparkles } from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +12,8 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { getAIProductDescription } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -34,6 +38,9 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+  
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -50,6 +57,35 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       status: defaultValues?.status ?? "active",
     },
   });
+  
+  const handleGenerateDescription = async () => {
+    const { name, category } = form.getValues();
+    if (!name || !category) {
+      toast({
+        variant: "destructive",
+        title: "Missing Information",
+        description: "Please enter a Product Name and Category first.",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const result = await getAIProductDescription({
+        productName: name,
+        category: category,
+      });
+      form.setValue("description", result.description, { shouldValidate: true });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Generation Failed",
+        description: "Could not generate a description. Please try again.",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -205,9 +241,21 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Description</FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGenerateDescription}
+                  disabled={isGenerating}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {isGenerating ? "Generating..." : "Generate with AI"}
+                </Button>
+              </div>
               <FormControl>
-                <Textarea placeholder="Enter product description..." {...field} />
+                <Textarea placeholder="Enter product description or generate one with AI." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
