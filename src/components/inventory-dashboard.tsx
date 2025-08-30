@@ -293,7 +293,7 @@ export function InventoryDashboard() {
             {loading ? (
               <p>Loading products...</p>
             ) : (
-              <div className="grid gap-6 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10">
+              <div className="grid gap-6 md:grid-cols-4 lg:grid-cols-6">
                 {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
