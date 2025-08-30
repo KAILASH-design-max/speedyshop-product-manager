@@ -45,7 +45,7 @@ export default function LoginPage() {
       // Fetch user profile to check their role
       const userProfile = await getUserProfile(user.uid);
 
-      if (userProfile && userProfile.role === 'inventory-manager') {
+      if (userProfile && (userProfile.role === 'inventory-manager' || userProfile.role === 'admin' || userProfile.role === 'viewer')) {
         router.push("/");
       } else {
         // Log out the user if they don't have the correct role

@@ -75,6 +75,11 @@ export function InventoryDashboard() {
       setProducts(productsFromDb);
     } catch (error) {
       console.error("Error fetching products:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not fetch product data.",
+      });
     } finally {
       setLoading(false);
     }
@@ -93,51 +98,74 @@ export function InventoryDashboard() {
         setUserProfile(profile);
       } catch (error) {
         console.error("Error fetching data:", error);
+         toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not fetch initial data.",
+        });
       } finally {
         setLoading(false);
       }
     }
     fetchInitialData();
-  }, [user]);
+  }, [user, toast]);
 
   const handleAddProduct = async (
     newProductData: Omit<Product, "id" | "historicalData">
   ) => {
-    if (!hasWriteAccess) return;
+    if (!hasWriteAccess) {
+       toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to add products." });
+       return;
+    }
     try {
       const newProduct = await addProduct(newProductData);
       setProducts((prev) => [...prev, newProduct]);
+      toast({ title: "Success", description: "Product added successfully." });
     } catch (error) {
       console.error("Error adding product:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not add the product." });
     }
   };
 
   const handleUpdateProduct = async (updatedProduct: Product) => {
-    if (!hasWriteAccess) return;
+    if (!hasWriteAccess) {
+       toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to update products." });
+       return;
+    }
     try {
       await updateProduct(updatedProduct.id, updatedProduct);
       setProducts((prev) =>
         prev.map((p) => (p.id === updatedProduct.id ? updatedProduct : p))
       );
       setEditingProduct(null);
+      toast({ title: "Success", description: "Product updated successfully." });
     } catch (error) {
       console.error("Error updating product:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not update the product." });
     }
   };
 
   const handleDeleteProduct = async (productId: string) => {
-    if (!hasWriteAccess) return;
+    if (!hasWriteAccess) {
+       toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to delete products." });
+       return;
+    }
     try {
       await deleteProduct(productId);
       setProducts((prev) => prev.filter((p) => p.id !== productId));
       setDeletingProduct(null);
+      toast({ title: "Success", description: "Product deleted successfully." });
     } catch (error) {
       console.error("Error deleting product:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not delete the product." });
     }
   };
 
   const handleUpdateStock = async (productId: string, newStock: number) => {
-    if (!hasWriteAccess) return;
+    if (!hasWriteAccess) {
+       toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to update stock." });
+       return;
+    }
     const productToUpdate = products.find((p) => p.id === productId);
     if (!productToUpdate) return;
 
@@ -163,13 +191,18 @@ export function InventoryDashboard() {
         prev.map((p) => (p.id === productId ? updatedProductData : p))
       );
       setUpdatingStockProduct(null);
+      toast({ title: "Success", description: "Stock updated successfully." });
     } catch (error) {
       console.error("Error updating stock:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not update stock." });
     }
   };
   
   const handleBulkUpload = async (uploadedProducts: Omit<Product, "id" | "historicalData">[]) => {
-    if (!hasWriteAccess) return;
+    if (!hasWriteAccess) {
+       toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to perform this action." });
+       return;
+    }
     try {
       const result = await bulkAddProducts(uploadedProducts);
       if (result.success) {
