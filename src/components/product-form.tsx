@@ -3,8 +3,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Image as ImageIcon } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +13,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
+import { getAIProductDescription, getAIProductCategory, getAIProductName, getAIProductImage } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "./ui/skeleton";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -66,6 +68,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
   const [isGeneratingName, setIsGeneratingName] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const { toast } = useToast();
   
   const form = useForm<ProductFormValues>({
@@ -85,6 +88,8 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       status: defaultValues?.status ?? "active",
     },
   });
+
+  const imageUrl = form.watch("imageUrl");
   
   const handleGenerateDescription = async () => {
     const { name, category } = form.getValues();
@@ -174,6 +179,37 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     }
   };
 
+  const handleGenerateImage = async () => {
+    const { name, category } = form.getValues();
+    if (!name || !category) {
+      toast({
+        variant: "destructive",
+        title: "Missing Information",
+        description: "Please enter a Product Name and Category first to generate an image.",
+      });
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    form.setValue("imageUrl", ""); // Clear previous image
+    try {
+      const result = await getAIProductImage({ productName: name, category: category });
+      if (result.imageUrl) {
+        form.setValue("imageUrl", result.imageUrl, { shouldValidate: true });
+      } else {
+         throw new Error("Received an empty image URL.");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Image Generation Failed",
+        description: "Could not generate an image. Please try again later.",
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
 
   return (
     <Form {...form}>
@@ -203,13 +239,25 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             </FormItem>
           )}
         />
-
+        
         <FormField
           control={form.control}
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Image URL</FormLabel>
+              <div className="flex items-center justify-between">
+                <FormLabel>Product Image URL</FormLabel>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGenerateImage}
+                  disabled={isGeneratingImage}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {isGeneratingImage ? "Generating..." : "Generate with AI"}
+                </Button>
+              </div>
               <FormControl>
                 <Input type="url" placeholder="https://example.com/image.png" {...field} />
               </FormControl>
@@ -217,6 +265,19 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             </FormItem>
           )}
         />
+        
+        <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center">
+            {isGeneratingImage ? (
+              <Skeleton className="h-full w-full" />
+            ) : imageUrl ? (
+              <Image src={imageUrl} alt="Generated product image" layout="fill" objectFit="contain" className="rounded-md" />
+            ) : (
+              <div className="text-muted-foreground text-sm flex flex-col items-center">
+                <ImageIcon className="h-8 w-8 mb-2" />
+                <p>Image will be generated here</p>
+              </div>
+            )}
+        </div>
         
         <div className="flex items-center justify-between">
             <FormLabel>Category & Subcategory</FormLabel>
