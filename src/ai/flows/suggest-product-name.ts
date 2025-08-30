@@ -31,12 +31,18 @@ const prompt = ai.definePrompt({
   name: 'suggestProductNamePrompt',
   input: { schema: SuggestProductNameInputSchema },
   output: { schema: SuggestProductNameOutputSchema },
-  prompt: `You are a branding expert. Based on the product category and description, suggest a creative and suitable product name.
+  prompt: `You are a branding expert. Based on the product category and description, suggest a single, specific, and suitable product name.
 
 Category: {{category}}
 {{#if description}}
 Description: {{description}}
 {{/if}}
+
+For example:
+- If the category is "Vegetables & Fruits", a good suggestion would be "Fresh Grapes" or "Organic Apples".
+- If the category is "Dairy & Breakfast", a good suggestion would be "Amul Gold Milk" or "Britannia Brown Bread".
+- If the category is "Instant & Frozen Food", a good suggestion would be "Maggi 2-Minute Noodles".
+- If the category is "Munchies", a good suggestion would be "Lays Classic Salted".
 
 Provide just one name, without any extra text or quotation marks.
 `,
