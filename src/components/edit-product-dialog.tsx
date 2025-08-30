@@ -14,7 +14,18 @@ interface EditProductDialogProps {
 
 export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange }: EditProductDialogProps) {
   const handleSubmit = (values: ProductFormValues) => {
-    onUpdateProduct({ ...product, ...values });
+    const { imageUrl, ...rest } = values;
+    const updatedProduct = {
+      ...product,
+      ...rest,
+      images: imageUrl ? [imageUrl] : product.images || [],
+    };
+    onUpdateProduct(updatedProduct);
+  };
+
+  const defaultValues = {
+    ...product,
+    imageUrl: product.images && product.images.length > 0 ? product.images[0] : "",
   };
 
   return (
@@ -27,7 +38,7 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-6">
-          <ProductForm onSubmit={handleSubmit} defaultValues={product} buttonText="Save Changes" />
+          <ProductForm onSubmit={handleSubmit} defaultValues={defaultValues} buttonText="Save Changes" />
         </ScrollArea>
       </DialogContent>
     </Dialog>

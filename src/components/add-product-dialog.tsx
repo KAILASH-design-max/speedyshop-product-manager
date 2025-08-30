@@ -15,7 +15,12 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
   const [open, setOpen] = useState(false);
 
   const handleSubmit = (values: ProductFormValues) => {
-    onAddProduct(values);
+    const { imageUrl, ...rest } = values;
+    const productData = {
+      ...rest,
+      images: imageUrl ? [imageUrl] : [],
+    };
+    onAddProduct(productData);
     setOpen(false);
   };
 

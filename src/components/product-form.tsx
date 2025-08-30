@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
+  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   lowStockThreshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
   price: z.coerce.number().min(0, { message: "Price cannot be negative." }),
@@ -33,7 +34,7 @@ export type ProductFormValues = z.infer<typeof formSchema>;
 
 interface ProductFormProps {
   onSubmit: (values: ProductFormValues) => void;
-  defaultValues?: Partial<Product>;
+  defaultValues?: Partial<ProductFormValues>;
   buttonText: string;
 }
 
@@ -71,6 +72,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: defaultValues?.name ?? "",
+      imageUrl: defaultValues?.imageUrl ?? "",
       stock: defaultValues?.stock ?? 0,
       lowStockThreshold: defaultValues?.lowStockThreshold ?? 10,
       price: defaultValues?.price ?? 0,
@@ -196,6 +198,20 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
               </div>
               <FormControl>
                 <Input placeholder="e.g., Classic T-Shirt" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="imageUrl"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Product Image URL</FormLabel>
+              <FormControl>
+                <Input type="url" placeholder="https://example.com/image.png" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
