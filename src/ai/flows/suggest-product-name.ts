@@ -39,9 +39,9 @@ Description: {{description}}
 {{/if}}
 
 For example:
-- If the category is "Vegetables & Fruits", a good suggestion would be "Fresh Grapes" or "Organic Apples".
-- If the category is "Dairy & Breakfast", a good suggestion would be "Amul Gold Milk" or "Britannia Brown Bread".
-- If the category is "Instant & Frozen Food", a good suggestion would be "Maggi 2-Minute Noodles".
+- If the category is "Vegetables & Fruits", a good suggestion would be "Grapes" or "Apples".
+- If the category is "Dairy & Breakfast", a good suggestion would be "Amul Milk" or "Britannia Bread".
+- If the category is "Instant & Frozen Food", a good suggestion would be "Maggi Noodles".
 - If the category is "Munchies", a good suggestion would be "Lays Classic Salted".
 
 Provide just one name, without any extra text or quotation marks.
