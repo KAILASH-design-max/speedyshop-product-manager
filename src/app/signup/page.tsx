@@ -35,7 +35,7 @@ export default function SignUpPage() {
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", email: "", password: "", role: "viewer" },
+    defaultValues: { name: "", email: "", password: "", role: "inventory-manager" },
   });
 
   const onSubmit = async (values: SignUpFormValues) => {
@@ -136,16 +136,14 @@ export default function SignUpPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
                         <SelectItem value="inventory-manager">Inventory Manager</SelectItem>
-                        <SelectItem value="viewer">Viewer</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
