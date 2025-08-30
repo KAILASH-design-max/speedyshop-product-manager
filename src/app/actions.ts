@@ -8,6 +8,8 @@ import { generateProductCategory } from "@/ai/flows/generate-product-category";
 import type { GenerateProductCategoryInput, GenerateProductCategoryOutput } from "@/ai/flows/generate-product-category";
 import { suggestProductName } from "@/ai/flows/suggest-product-name";
 import type { SuggestProductNameInput, SuggestProductNameOutput } from "@/ai/flows/suggest-product-name";
+import { addProduct } from "@/lib/firestore";
+import type { Product } from "@/lib/types";
 
 
 export async function getStockForecast(
@@ -67,5 +69,16 @@ export async function getAIProductName(
     return {
       productName: "",
     };
+  }
+}
+
+export async function bulkAddProducts(products: Omit<Product, "id" | "historicalData">[]): Promise<{ success: boolean; count: number; error?: string }> {
+  try {
+    const promises = products.map(product => addProduct(product));
+    await Promise.all(promises);
+    return { success: true, count: products.length };
+  } catch (error: any) {
+    console.error("Error in bulkAddProducts:", error);
+    return { success: false, count: 0, error: error.message || "An unexpected error occurred during the bulk upload." };
   }
 }

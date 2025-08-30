@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Upload } from "lucide-react";
 
 import type { Product, UserProfile } from "@/lib/types";
 import {
@@ -22,9 +22,14 @@ import { DeleteProductAlert } from "./delete-product-alert";
 import { UpdateStockDialog } from "./update-stock-dialog";
 import { StockForecastingDialog } from "./stock-forecasting-dialog";
 import { useAuth } from "@/hooks/use-auth";
+import { BulkUploadDialog } from "./bulk-upload-dialog";
+import { bulkAddProducts } from "@/app/actions";
+import { useToast } from "@/hooks/use-toast";
+
 
 export function InventoryDashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,8 +40,20 @@ export function InventoryDashboard() {
 
   const hasWriteAccess = userProfile?.role === 'admin' || userProfile?.role === 'inventory-manager';
 
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const productsFromDb = await getProducts();
+      setProducts(productsFromDb);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    async function fetchData() {
+    async function fetchInitialData() {
       if (!user) return;
       try {
         setLoading(true);
@@ -52,7 +69,7 @@ export function InventoryDashboard() {
         setLoading(false);
       }
     }
-    fetchData();
+    fetchInitialData();
   }, [user]);
 
   const handleAddProduct = async (
@@ -122,6 +139,29 @@ export function InventoryDashboard() {
       console.error("Error updating stock:", error);
     }
   };
+  
+  const handleBulkUpload = async (uploadedProducts: Omit<Product, "id" | "historicalData">[]) => {
+    if (!hasWriteAccess) return;
+    try {
+      const result = await bulkAddProducts(uploadedProducts);
+      if (result.success) {
+        toast({
+          title: "Upload Successful",
+          description: `${result.count} products have been added to the inventory.`,
+        });
+        await fetchProducts(); // Refetch products to show the newly added ones
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error: any) {
+      console.error("Bulk upload failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Upload Failed",
+        description: error.message || "Could not add products. Please check the file and try again.",
+      });
+    }
+  };
 
 
   return (
@@ -132,12 +172,20 @@ export function InventoryDashboard() {
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">Inventory</h1>
             {hasWriteAccess && (
-              <AddProductDialog onAddProduct={handleAddProduct}>
-                <Button>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Add Product
-                </Button>
-              </AddProductDialog>
+               <div className="flex gap-2">
+                <BulkUploadDialog onUpload={handleBulkUpload}>
+                  <Button variant="outline">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Bulk Upload
+                  </Button>
+                </BulkUploadDialog>
+                <AddProductDialog onAddProduct={handleAddProduct}>
+                  <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Product
+                  </Button>
+                </AddProductDialog>
+              </div>
             )}
           </div>
 
