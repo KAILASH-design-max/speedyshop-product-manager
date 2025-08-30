@@ -37,6 +37,30 @@ interface ProductFormProps {
   buttonText: string;
 }
 
+const productCategories = [
+  "Vegetables & Fruits",
+  "Dairy & Breakfast",
+  "Munchies",
+  "Cold Drinks & Juices",
+  "Instant & Frozen Food",
+  "Tea, Coffee & Drinks",
+  "Bakery & Biscuits",
+  "Sweet Tooth",
+  "Atta, Rice & Dal",
+  "Masala, Oil & More",
+  "Sauces & Spreads",
+  "Chicken, Meat & Fish",
+  "Baby Care",
+  "Pharma & Wellness",
+  "Cleaning Essentials",
+  "Home & Office",
+  "Personal Care",
+  "Pet Care",
+  "Paan Corner",
+  "SpeedyBistro",
+];
+
+
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
@@ -197,9 +221,18 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             name="category"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <Input placeholder="e.g., Fruits & Vegetables" {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {productCategories.map((category) => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 <FormMessage />
               </FormItem>
             )}
