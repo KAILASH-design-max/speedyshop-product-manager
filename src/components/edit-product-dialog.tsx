@@ -15,10 +15,20 @@ interface EditProductDialogProps {
 export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange }: EditProductDialogProps) {
   const handleSubmit = (values: ProductFormValues) => {
     const { imageUrl, ...rest } = values;
+
+    // Convert empty strings for optional number fields to undefined
+    const cost = rest.cost === '' ? undefined : Number(rest.cost);
+    const originalPrice = rest.originalPrice === '' ? undefined : Number(rest.originalPrice);
+    const popularity = rest.popularity === '' ? undefined : Number(rest.popularity);
+
     const updatedProduct = {
       ...product,
       ...rest,
       images: imageUrl ? [imageUrl] : product.images || [],
+      cost,
+      originalPrice,
+      popularity,
+      supplierName: rest.supplierName || null,
     };
     onUpdateProduct(updatedProduct);
   };

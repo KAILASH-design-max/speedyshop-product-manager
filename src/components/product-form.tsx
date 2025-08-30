@@ -24,12 +24,16 @@ const formSchema = z.object({
   lowStockThreshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
   price: z.coerce.number().min(0, { message: "Price cannot be negative." }),
   originalPrice: z.coerce.number().min(0).optional().or(z.literal('')),
+  cost: z.coerce.number().min(0).optional().or(z.literal('')),
   category: z.string().min(2, { message: "Category is required." }),
   subcategory: z.string().optional(),
   description: z.string().optional(),
   weight: z.string().optional(),
   origin: z.string().optional(),
   status: z.enum(["active", "inactive"]),
+  popularity: z.coerce.number().min(0).max(100).optional().or(z.literal('')),
+  supplierId: z.string().optional(),
+  supplierName: z.string().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;
@@ -80,12 +84,16 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       lowStockThreshold: defaultValues?.lowStockThreshold ?? 10,
       price: defaultValues?.price ?? 0,
       originalPrice: defaultValues?.originalPrice ?? '',
+      cost: defaultValues?.cost ?? '',
       category: defaultValues?.category ?? "",
       subcategory: defaultValues?.subcategory ?? "",
       description: defaultValues?.description ?? "",
       weight: defaultValues?.weight ?? "",
       origin: defaultValues?.origin ?? "",
       status: defaultValues?.status ?? "active",
+      popularity: defaultValues?.popularity ?? '',
+      supplierId: defaultValues?.supplierId ?? "",
+      supplierName: defaultValues?.supplierName ?? "",
     },
   });
 
@@ -355,6 +363,34 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
               )}
             />
         </div>
+         <div className="grid grid-cols-2 gap-4">
+             <FormField
+              control={form.control}
+              name="cost"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cost (Optional)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="0.00" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="popularity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Popularity (0-100)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="50" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -405,6 +441,34 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
                   <FormLabel>Origin</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Local Farms" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="supplierId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Supplier ID (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="SUP-001" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="supplierName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Supplier Name (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Farm Fresh Inc." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
