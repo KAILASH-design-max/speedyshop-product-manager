@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PlusCircle, Upload } from "lucide-react";
+import { PlusCircle, Upload, Search } from "lucide-react";
 
 import type { Product, UserProfile } from "@/lib/types";
 import {
@@ -25,7 +25,32 @@ import { useAuth } from "@/hooks/use-auth";
 import { BulkUploadDialog } from "./bulk-upload-dialog";
 import { bulkAddProducts } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
+
+const productCategories = [
+  "Vegetables & Fruits",
+  "Dairy & Breakfast",
+  "Munchies",
+  "Cold Drinks & Juices",
+  "Instant & Frozen Food",
+  "Tea, Coffee & Drinks",
+  "Bakery & Biscuits",
+  "Sweet Tooth",
+  "Atta, Rice & Dal",
+  "Masala, Oil & More",
+  "Sauces & Spreads",
+  "Chicken, Meat & Fish",
+  "Baby Care",
+  "Pharma & Wellness",
+  "Cleaning Essentials",
+  "Home & Office",
+  "Personal Care",
+  "Pet Care",
+  "Paan Corner",
+  "SpeedyBistro",
+];
 
 export function InventoryDashboard() {
   const { user } = useAuth();
@@ -37,6 +62,9 @@ export function InventoryDashboard() {
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
   const [forecastingProduct, setForecastingProduct] = useState<Product | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+
 
   const hasWriteAccess = userProfile?.role === 'admin' || userProfile?.role === 'inventory-manager';
 
@@ -163,6 +191,12 @@ export function InventoryDashboard() {
     }
   };
 
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
 
   return (
     <div className="flex min-h-screen w-full flex-col">
@@ -195,12 +229,38 @@ export function InventoryDashboard() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold mb-4">All Products</h2>
+            <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
+              <h2 className="text-2xl font-bold">All Products ({filteredProducts.length})</h2>
+              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                <div className="relative w-full md:w-64">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="search"
+                      placeholder="Search products..."
+                      className="pl-8 sm:w-full"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                 <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="w-full md:w-[180px]">
+                      <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {productCategories.map(cat => (
+                        <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+              </div>
+            </div>
+
             {loading ? (
               <p>Loading products...</p>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6">
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -212,6 +272,12 @@ export function InventoryDashboard() {
                   />
                 ))}
               </div>
+            )}
+            {!loading && filteredProducts.length === 0 && (
+                <div className="text-center col-span-full py-12 text-muted-foreground">
+                    <p>No products found.</p>
+                    {searchTerm && <p>Try adjusting your search or filters.</p>}
+                </div>
             )}
           </div>
         </div>
