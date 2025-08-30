@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import Image from 'next/image';
+import { useState } from "react";
 
 
 interface ProductCardProps {
@@ -22,7 +23,13 @@ interface ProductCardProps {
 export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, hasWriteAccess }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
-  const imageUrl = product.images && product.images.length > 0 ? product.images[0] : `https://picsum.photos/seed/${product.id}/400/300`;
+  const initialImageUrl = product.images && product.images.length > 0 ? product.images[0] : `https://picsum.photos/seed/${product.id}/400/300`;
+
+  const [imageUrl, setImageUrl] = useState(initialImageUrl);
+
+  const handleImageError = () => {
+    setImageUrl(`https://picsum.photos/seed/${product.id}/400/300`);
+  };
 
 
   return (
@@ -35,6 +42,7 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
           height={300}
           className="object-cover w-full h-full rounded-t-lg"
           data-ai-hint={`${product.category} ${product.subcategory}`}
+          onError={handleImageError}
         />
         <div className="absolute top-2 right-2">
             {hasWriteAccess && (
