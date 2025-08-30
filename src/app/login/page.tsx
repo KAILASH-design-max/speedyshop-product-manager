@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth } from "@/lib/auth";
 import Link from "next/link";
 
@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Package, Eye, EyeOff } from "lucide-react";
+import { getUserProfile } from "@/lib/firestore";
 
 
 const formSchema = z.object({
@@ -38,8 +39,24 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push("/");
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
+
+      // Fetch user profile to check their role
+      const userProfile = await getUserProfile(user.uid);
+
+      if (userProfile && userProfile.role === 'inventory-manager') {
+        router.push("/");
+      } else {
+        // Log out the user if they don't have the correct role
+        await signOut(auth);
+        toast({
+          variant: "destructive",
+          title: "Access Denied",
+          description: "You do not have permission to access this application.",
+        });
+      }
+
     } catch (error: any) {
       toast({
         variant: "destructive",
