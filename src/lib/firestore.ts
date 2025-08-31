@@ -12,14 +12,20 @@ import {
   runTransaction,
   writeBatch,
   increment,
+  query,
+  orderBy,
+  limit,
+  where,
+  onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order } from "./types";
+import type { Product, UserProfile, Order, Notification } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
 const usersCollection = collection(db, "users");
 const ordersCollection = collection(db, "orders");
+const notificationsCollection = collection(db, "notifications");
 
 
 // GET all products
@@ -55,6 +61,23 @@ export async function updateProduct(
   updates: Partial<Omit<Product, "id">>
 ): Promise<void> {
   const productDoc = doc(db, "products", productId);
+  
+  if (updates.stock !== undefined) {
+    const productSnapshot = await getDoc(productDoc);
+    const productData = productSnapshot.data() as Product;
+    
+    if (productData.stock > (productData.lowStockThreshold || 0) && updates.stock <= (productData.lowStockThreshold || 0)) {
+      await addNotification({
+        title: "Low Stock Alert",
+        description: `Stock for ${productData.name} is low (${updates.stock} left).`,
+        type: 'low-stock',
+        isRead: false,
+        createdAt: serverTimestamp(),
+        link: `/products/${productId}`
+      });
+    }
+  }
+
   await updateDoc(productDoc, {
     ...updates,
     updatedAt: serverTimestamp(),
@@ -92,7 +115,16 @@ export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Pr
 
   await runTransaction(db, async (transaction) => {
     // 1. Create the new order
-    transaction.set(newOrderRef, { ...orderData, updatedAt: serverTimestamp() });
+    transaction.set(newOrderRef, { ...orderData, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    
+     await addNotification({
+        title: "New Order Received",
+        description: `Order #${newOrderRef.id.substring(0,6)} for a total of $${orderData.totalAmount} has been placed.`,
+        type: 'new-order',
+        isRead: false,
+        createdAt: serverTimestamp(),
+        link: `/orders/${newOrderRef.id}`
+      });
 
     // 2. Decrease stock for each item in the order
     for (const item of orderData.items) {
@@ -103,15 +135,67 @@ export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Pr
         throw new Error(`Product with ID ${item.productId} does not exist.`);
       }
 
-      const currentStock = productDoc.data().stock;
+      const productData = productDoc.data();
+      const currentStock = productData.stock;
+      
       if (currentStock < item.quantity) {
         throw new Error(`Not enough stock for ${item.name}. Available: ${currentStock}, Requested: ${item.quantity}`);
       }
       
       const newStock = currentStock - item.quantity;
       transaction.update(productRef, { stock: newStock });
+      
+      // Check for low stock after transaction
+      if (currentStock > productData.lowStockThreshold && newStock <= productData.lowStockThreshold) {
+         await addNotification({
+            title: "Low Stock Alert",
+            description: `Stock for ${productData.name} is low (${newStock} left) due to a new order.`,
+            type: 'low-stock',
+            isRead: false,
+            createdAt: serverTimestamp(),
+            link: `/products/${productData.id}`
+        });
+      }
     }
   });
   
   return { ...orderData, id: newOrderRef.id };
+}
+
+
+// NOTIFICATIONS
+export async function addNotification(notificationData: Omit<Notification, "id">): Promise<Notification> {
+  const docRef = await addDoc(notificationsCollection, notificationData);
+  return { ...notificationData, id: docRef.id } as Notification;
+}
+
+export function getNotifications(callback: (notifications: Notification[]) => void): () => void {
+  const q = query(notificationsCollection, orderBy("createdAt", "desc"), limit(20));
+  
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const notifications: Notification[] = [];
+    querySnapshot.forEach((doc) => {
+      notifications.push({ id: doc.id, ...doc.data() } as Notification);
+    });
+    callback(notifications);
+  });
+  
+  return unsubscribe;
+}
+
+export async function markNotificationAsRead(notificationId: string): Promise<void> {
+  const notificationDoc = doc(db, "notifications", notificationId);
+  await updateDoc(notificationDoc, { isRead: true });
+}
+
+export async function markAllNotificationsAsRead(): Promise<void> {
+  const q = query(notificationsCollection, where("isRead", "==", false));
+  const querySnapshot = await getDocs(q);
+  
+  const batch = writeBatch(db);
+  querySnapshot.forEach((doc) => {
+    batch.update(doc.ref, { isRead: true });
+  });
+  
+  await batch.commit();
 }

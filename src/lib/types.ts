@@ -68,3 +68,13 @@ export interface Order {
   phoneNumber?: string;
   updatedAt?: any; // Firebase Timestamp
 }
+
+export interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  type: 'low-stock' | 'new-order' | 'info';
+  isRead: boolean;
+  createdAt: any; // Firebase Timestamp
+  link?: string;
+}
