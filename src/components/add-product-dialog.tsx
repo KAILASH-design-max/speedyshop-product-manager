@@ -28,7 +28,7 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
       cost,
       originalPrice,
       popularity,
-      supplierName: rest.supplierName || null, // Ensure supplierName is null if empty
+      supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,
     };
     onAddProduct(productData);
     setOpen(false);

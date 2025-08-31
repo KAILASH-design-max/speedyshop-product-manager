@@ -4,18 +4,19 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Sparkles, Image as ImageIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import type { Product } from "@/lib/types";
+import type { Product, Supplier } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { getAIProductDescription, getAIProductCategory, getAIProductName, getAIProductImage } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
+import { getSuppliers } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -33,7 +34,6 @@ const formSchema = z.object({
   status: z.enum(["active", "inactive"]),
   popularity: z.coerce.number().min(0).max(100).optional().or(z.literal('')),
   supplierId: z.string().optional(),
-  supplierName: z.string().optional(),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;
@@ -74,7 +74,24 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
   const [isGeneratingName, setIsGeneratingName] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const { toast } = useToast();
+  
+  useEffect(() => {
+    async function fetchSuppliers() {
+      try {
+        const suppliersFromDb = await getSuppliers();
+        setSuppliers(suppliersFromDb);
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not fetch suppliers.",
+        });
+      }
+    }
+    fetchSuppliers();
+  }, [toast]);
   
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -94,7 +111,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       status: defaultValues?.status ?? "active",
       popularity: defaultValues?.popularity ?? '',
       supplierId: defaultValues?.supplierId ?? "",
-      supplierName: defaultValues?.supplierName ?? "",
     },
   });
 
@@ -448,34 +464,29 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
               )}
             />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="supplierId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Supplier ID (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="SUP-001" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="supplierName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Supplier Name (Optional)</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., Farm Fresh Inc." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-        </div>
+        <FormField
+          control={form.control}
+          name="supplierId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Supplier</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a supplier" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="none">No Supplier</SelectItem>
+                  {suppliers.map((supplier) => (
+                    <SelectItem key={supplier.id} value={supplier.id}>{supplier.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
          <FormField
             control={form.control}
             name="status"

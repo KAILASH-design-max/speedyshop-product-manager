@@ -15,7 +15,6 @@ export interface Product {
   status?: 'active' | 'inactive';
   subcategory?: string;
   supplierId?: string;
-  supplierName?: string | null;
   weight?: string;
   createdAt?: any; // Using `any` for Firebase Timestamp flexibility
   updatedAt?: any; // Using `any` for Firebase Timestamp flexibility
@@ -77,4 +76,14 @@ export interface Notification {
   isRead: boolean;
   createdAt: any; // Firebase Timestamp
   link?: string;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  createdAt?: any;
 }

@@ -19,13 +19,14 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order, Notification } from "./types";
+import type { Product, UserProfile, Order, Notification, Supplier } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
 const usersCollection = collection(db, "users");
 const ordersCollection = collection(db, "orders");
 const notificationsCollection = collection(db, "notifications");
+const suppliersCollection = collection(db, "suppliers");
 
 
 // GET all products
@@ -198,4 +199,32 @@ export async function markAllNotificationsAsRead(): Promise<void> {
   });
   
   await batch.commit();
+}
+
+// SUPPLIERS
+export async function getSuppliers(): Promise<Supplier[]> {
+  const querySnapshot = await getDocs(suppliersCollection);
+  const suppliers: Supplier[] = [];
+  querySnapshot.forEach((doc) => {
+    suppliers.push({ id: doc.id, ...doc.data() } as Supplier);
+  });
+  return suppliers;
+}
+
+export async function addSupplier(supplierData: Omit<Supplier, "id">): Promise<Supplier> {
+  const docRef = await addDoc(suppliersCollection, {
+    ...supplierData,
+    createdAt: serverTimestamp(),
+  });
+  return { ...supplierData, id: docRef.id };
+}
+
+export async function updateSupplier(supplierId: string, updates: Partial<Omit<Supplier, "id">>): Promise<void> {
+  const supplierDoc = doc(db, "suppliers", supplierId);
+  await updateDoc(supplierDoc, updates);
+}
+
+export async function deleteSupplier(supplierId: string): Promise<void> {
+  const supplierDoc = doc(db, "suppliers", supplierId);
+  await deleteDoc(supplierDoc);
 }

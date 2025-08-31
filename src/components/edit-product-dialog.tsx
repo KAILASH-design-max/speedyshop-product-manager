@@ -28,7 +28,7 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
       cost,
       originalPrice,
       popularity,
-      supplierName: rest.supplierName || null,
+      supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,
     };
     onUpdateProduct(updatedProduct);
   };
