@@ -292,7 +292,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center">
             {isGeneratingImage ? (
               <Skeleton className="h-full w-full" />
-            ) : imageUrl ? (
+            ) : imageUrl && imageUrl.startsWith('http') ? (
               <Image src={imageUrl} alt="Generated product image" layout="fill" objectFit="contain" className="rounded-md" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
