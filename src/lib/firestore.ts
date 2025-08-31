@@ -9,13 +9,18 @@ import {
   serverTimestamp,
   getDoc,
   setDoc,
+  runTransaction,
+  writeBatch,
+  increment,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile } from "./types";
+import type { Product, UserProfile, Order } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
 const usersCollection = collection(db, "users");
+const ordersCollection = collection(db, "orders");
+
 
 // GET all products
 export async function getProducts(): Promise<Product[]> {
@@ -79,4 +84,34 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     return docSnap.data() as UserProfile;
   }
   return null;
+}
+
+// ADD a new order and decrease stock
+export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Promise<Order> {
+  const newOrderRef = doc(collection(db, "orders"));
+
+  await runTransaction(db, async (transaction) => {
+    // 1. Create the new order
+    transaction.set(newOrderRef, { ...orderData, updatedAt: serverTimestamp() });
+
+    // 2. Decrease stock for each item in the order
+    for (const item of orderData.items) {
+      const productRef = doc(db, "products", item.productId);
+      const productDoc = await transaction.get(productRef);
+
+      if (!productDoc.exists()) {
+        throw new Error(`Product with ID ${item.productId} does not exist.`);
+      }
+
+      const currentStock = productDoc.data().stock;
+      if (currentStock < item.quantity) {
+        throw new Error(`Not enough stock for ${item.name}. Available: ${currentStock}, Requested: ${item.quantity}`);
+      }
+      
+      const newStock = currentStock - item.quantity;
+      transaction.update(productRef, { stock: newStock });
+    }
+  });
+  
+  return { ...orderData, id: newOrderRef.id };
 }
