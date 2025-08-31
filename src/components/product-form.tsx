@@ -25,7 +25,6 @@ const formSchema = z.object({
   lowStockThreshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
   price: z.coerce.number().min(0, { message: "Price cannot be negative." }),
   originalPrice: z.coerce.number().min(0).optional().or(z.literal('')),
-  cost: z.coerce.number().min(0).optional().or(z.literal('')),
   category: z.string().min(2, { message: "Category is required." }),
   subcategory: z.string().optional(),
   description: z.string().optional(),
@@ -34,7 +33,6 @@ const formSchema = z.object({
   status: z.enum(["active", "inactive"]),
   popularity: z.coerce.number().min(0).max(100).optional().or(z.literal('')),
   supplierId: z.string().optional(),
-  currency: z.string().default("INR"),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;
@@ -103,7 +101,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       lowStockThreshold: defaultValues?.lowStockThreshold ?? 10,
       price: defaultValues?.price ?? 0,
       originalPrice: defaultValues?.originalPrice ?? '',
-      cost: defaultValues?.cost ?? '',
       category: defaultValues?.category ?? "",
       subcategory: defaultValues?.subcategory ?? "",
       description: defaultValues?.description ?? "",
@@ -112,7 +109,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       status: defaultValues?.status ?? "active",
       popularity: defaultValues?.popularity ?? '',
       supplierId: defaultValues?.supplierId ?? "",
-      currency: defaultValues?.currency ?? 'INR',
     },
   });
 
@@ -355,44 +351,19 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           />
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem className="col-span-2">
-                <FormLabel>Price</FormLabel>
-                <FormControl>
-                  <Input type="number" placeholder="0.00" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="currency"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Currency</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Currency" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="INR">INR (₹)</SelectItem>
-                    <SelectItem value="USD">USD ($)</SelectItem>
-                    <SelectItem value="EUR">EUR (€)</SelectItem>
-                    <SelectItem value="GBP">GBP (£)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="price"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Price</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="0.00" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
          <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -409,21 +380,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
               )}
             />
              <FormField
-              control={form.control}
-              name="cost"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cost (Optional)</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="0.00" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-        </div>
-         <div className="grid grid-cols-2 gap-4">
-            <FormField
               control={form.control}
               name="popularity"
               render={({ field }) => (

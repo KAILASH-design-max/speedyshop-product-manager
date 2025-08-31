@@ -11,7 +11,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
 const GenerateBusinessInsightsInputSchema = z.object({
-  productData: z.string().describe('A JSON string of all product data, including id, name, category, price, cost, and stock.'),
+  productData: z.string().describe('A JSON string of all product data, including id, name, category, price, and stock.'),
   orderData: z.string().describe('A JSON string of all order data, including id, items, totalAmount, and orderDate.'),
 });
 export type GenerateBusinessInsightsInput = z.infer<typeof GenerateBusinessInsightsInputSchema>;

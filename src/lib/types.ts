@@ -5,7 +5,6 @@ export interface Product {
   lowStockThreshold: number;
   historicalData: string;
   category?: string;
-  cost?: number;
   description?: string;
   images?: string[];
   origin?: string;
@@ -16,7 +15,6 @@ export interface Product {
   subcategory?: string;
   supplierId?: string;
   weight?: string;
-  currency?: string;
   createdAt?: any; // Using `any` for Firebase Timestamp flexibility
   updatedAt?: any; // Using `any` for Firebase Timestamp flexibility
 }

@@ -17,7 +17,6 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
     const { imageUrl, ...rest } = values;
 
     // Convert empty strings for optional number fields to undefined
-    const cost = rest.cost === '' ? undefined : Number(rest.cost);
     const originalPrice = rest.originalPrice === '' ? undefined : Number(rest.originalPrice);
     const popularity = rest.popularity === '' ? undefined : Number(rest.popularity);
 
@@ -25,7 +24,6 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
       ...product,
       ...rest,
       images: imageUrl ? [imageUrl] : product.images || [],
-      cost,
       originalPrice,
       popularity,
       supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,

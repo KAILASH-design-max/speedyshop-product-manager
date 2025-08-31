@@ -49,7 +49,7 @@ export function ReportsPage() {
     setLoading(true);
     setInsights(null);
     try {
-        const productDataString = JSON.stringify(products.map(({ id, name, category, price, cost, stock }) => ({ id, name, category, price, cost, stock })), null, 2);
+        const productDataString = JSON.stringify(products.map(({ id, name, category, price, stock }) => ({ id, name, category, price, stock })), null, 2);
         const orderDataString = JSON.stringify(orders.map(({ id, items, totalAmount, orderDate }) => ({ id, items, totalAmount, orderDate: orderDate?.toDate ? orderDate.toDate().toISOString() : orderDate })), null, 2);
 
         const result = await getBusinessInsights({ productData: productDataString, orderData: orderDataString });
