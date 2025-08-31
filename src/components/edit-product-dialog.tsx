@@ -14,7 +14,7 @@ interface EditProductDialogProps {
 
 export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange }: EditProductDialogProps) {
   const handleSubmit = (values: ProductFormValues) => {
-    const { imageUrl, ...rest } = values;
+    const { imageUrls, ...rest } = values;
 
     // Convert empty strings for optional number fields to undefined
     const originalPrice = rest.originalPrice === '' ? undefined : Number(rest.originalPrice);
@@ -23,7 +23,7 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
     const updatedProduct = {
       ...product,
       ...rest,
-      images: imageUrl ? [imageUrl] : product.images || [],
+      images: imageUrls ? imageUrls.split('\n').filter(url => url.trim() !== '') : [],
       originalPrice,
       popularity,
       supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,
@@ -33,7 +33,7 @@ export function EditProductDialog({ product, onUpdateProduct, open, onOpenChange
 
   const defaultValues = {
     ...product,
-    imageUrl: product.images && product.images.length > 0 ? product.images[0] : "",
+    imageUrls: product.images ? product.images.join('\n') : "",
   };
 
   return (

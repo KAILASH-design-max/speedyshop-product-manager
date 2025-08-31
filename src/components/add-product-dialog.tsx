@@ -15,7 +15,7 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
   const [open, setOpen] = useState(false);
 
   const handleSubmit = (values: ProductFormValues) => {
-    const { imageUrl, ...rest } = values;
+    const { imageUrls, ...rest } = values;
     
     // Convert empty strings for optional number fields to undefined
     const originalPrice = rest.originalPrice === '' ? undefined : Number(rest.originalPrice);
@@ -23,7 +23,7 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
 
     const productData = {
       ...rest,
-      images: imageUrl ? [imageUrl] : [],
+      images: imageUrls ? imageUrls.split('\n').filter(url => url.trim() !== '') : [],
       originalPrice,
       popularity,
       supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,

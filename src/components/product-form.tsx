@@ -13,14 +13,14 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product, Supplier } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { getAIProductDescription, getAIProductCategory, getAIProductName, getAIProductImage } from "@/app/actions";
+import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "./ui/skeleton";
 import { getSuppliers } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
+  imageUrls: z.string().optional(),
   stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
   lowStockThreshold: z.coerce.number().int().min(0, { message: "Threshold cannot be negative." }),
   price: z.coerce.number().min(0, { message: "Price cannot be negative." }),
@@ -72,7 +72,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
   const [isGeneratingName, setIsGeneratingName] = useState(false);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const { toast } = useToast();
   
@@ -96,7 +95,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: defaultValues?.name ?? "",
-      imageUrl: defaultValues?.imageUrl ?? "",
+      imageUrls: defaultValues?.imageUrls ?? "",
       stock: defaultValues?.stock ?? 0,
       lowStockThreshold: defaultValues?.lowStockThreshold ?? 10,
       price: defaultValues?.price ?? 0,
@@ -112,7 +111,8 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     },
   });
 
-  const imageUrl = form.watch("imageUrl");
+  const imageUrls = form.watch("imageUrls");
+  const firstImageUrl = imageUrls?.split('\n')[0].trim();
   
   const handleGenerateDescription = async () => {
     const { name, category } = form.getValues();
@@ -202,38 +202,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     }
   };
 
-  const handleGenerateImage = async () => {
-    const { name, category } = form.getValues();
-    if (!name || !category) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please enter a Product Name and Category first to generate an image.",
-      });
-      return;
-    }
-
-    setIsGeneratingImage(true);
-    form.setValue("imageUrl", ""); // Clear previous image
-    try {
-      const result = await getAIProductImage({ productName: name, category: category });
-      if (result.imageUrl) {
-        form.setValue("imageUrl", result.imageUrl, { shouldValidate: true });
-      } else {
-         throw new Error("Received an empty image URL.");
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Image Generation Failed",
-        description: "Could not generate an image. Please try again later.",
-      });
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -265,39 +233,28 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         
         <FormField
           control={form.control}
-          name="imageUrl"
+          name="imageUrls"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Product Image URL</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleGenerateImage}
-                  disabled={isGeneratingImage}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  {isGeneratingImage ? "Generating..." : "Generate with AI"}
-                </Button>
-              </div>
+              <FormLabel>Product Image URLs</FormLabel>
               <FormControl>
-                <Input type="url" placeholder="https://example.com/image.png" {...field} />
+                <Textarea placeholder="https://example.com/image1.png&#x0a;https://example.com/image2.png" {...field} />
               </FormControl>
+              <FormDescription>
+                Enter one URL per line. The first URL will be the primary image.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         
         <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center">
-            {isGeneratingImage ? (
-              <Skeleton className="h-full w-full" />
-            ) : imageUrl && imageUrl.startsWith('http') ? (
-              <Image src={imageUrl} alt="Generated product image" layout="fill" objectFit="contain" className="rounded-md" />
+            {firstImageUrl ? (
+              <Image src={firstImageUrl} alt="Product image" layout="fill" objectFit="contain" className="rounded-md" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
                 <ImageIcon className="h-8 w-8 mb-2" />
-                <p>Image will be generated here</p>
+                <p>Primary image will be shown here</p>
               </div>
             )}
         </div>

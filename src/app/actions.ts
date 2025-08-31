@@ -8,8 +8,6 @@ import { generateProductCategory } from "@/ai/flows/generate-product-category";
 import type { GenerateProductCategoryInput, GenerateProductCategoryOutput } from "@/ai/flows/generate-product-category";
 import { suggestProductName } from "@/ai/flows/suggest-product-name";
 import type { SuggestProductNameInput, SuggestProductNameOutput } from "@/ai/flows/suggest-product-name";
-import { generateProductImage } from "@/ai/flows/generate-product-image";
-import type { GenerateProductImageInput, GenerateProductImageOutput } from "@/ai/flows/generate-product-image";
 import { addProduct } from "@/lib/firestore";
 import type { Product } from "@/lib/types";
 import { generateBusinessInsights } from "@/ai/flows/generate-business-insights";
@@ -72,20 +70,6 @@ export async function getAIProductName(
     console.error("Error in getAIProductName:", error);
     return {
       productName: "",
-    };
-  }
-}
-
-export async function getAIProductImage(
-  input: GenerateProductImageInput
-): Promise<GenerateProductImageOutput> {
-  try {
-    const result = await generateProductImage(input);
-    return result;
-  } catch (error) {
-    console.error("Error in getAIProductImage:", error);
-    return {
-      imageUrl: "",
     };
   }
 }
