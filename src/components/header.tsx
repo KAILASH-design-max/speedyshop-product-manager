@@ -1,21 +1,49 @@
 "use client";
 
-import { Package, LogOut, Moon, Sun } from "lucide-react";
+import { Package, LogOut, Moon, Sun, LayoutDashboard, Truck, BrainCircuit } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
 import { NotificationBell } from "./notification-bell";
+import Link from "next/link";
+import { usePathname } from 'next/navigation'
+import { cn } from "@/lib/utils";
+
 
 export function Header() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const pathname = usePathname()
+
+  const navLinks = [
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/suppliers", label: "Suppliers", icon: Truck },
+    { href: "/reports", label: "Reports", icon: BrainCircuit },
+  ]
 
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center">
-          <Package className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-lg font-bold">Stock Watch</span>
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center">
+            <Package className="h-6 w-6 text-primary" />
+            <span className="ml-2 text-lg font-bold">Stock Watch</span>
+          </Link>
+          <nav className="hidden md:flex items-center gap-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+                  pathname === link.href ? "text-primary" : "text-muted-foreground"
+                )}
+              >
+                <link.icon className="h-4 w-4" />
+                {link.label}
+              </Link>
+            ))}
+          </nav>
         </div>
         <div className="flex items-center gap-2">
           <Button

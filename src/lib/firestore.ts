@@ -110,6 +110,16 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   return null;
 }
 
+// GET all orders
+export async function getOrders(): Promise<Order[]> {
+  const querySnapshot = await getDocs(ordersCollection);
+  const orders: Order[] = [];
+  querySnapshot.forEach((doc) => {
+    orders.push({ id: doc.id, ...doc.data() } as Order);
+  });
+  return orders;
+}
+
 // ADD a new order and decrease stock
 export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Promise<Order> {
   const newOrderRef = doc(collection(db, "orders"));
@@ -147,7 +157,7 @@ export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Pr
       transaction.update(productRef, { stock: newStock });
       
       // Check for low stock after transaction
-      if (currentStock > productData.lowStockThreshold && newStock <= productData.lowStockThreshold) {
+      if (productData.lowStockThreshold && currentStock > productData.lowStockThreshold && newStock <= productData.lowStockThreshold) {
          await addNotification({
             title: "Low Stock Alert",
             description: `Stock for ${productData.name} is low (${newStock} left) due to a new order.`,

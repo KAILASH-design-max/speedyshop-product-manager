@@ -12,6 +12,8 @@ import { generateProductImage } from "@/ai/flows/generate-product-image";
 import type { GenerateProductImageInput, GenerateProductImageOutput } from "@/ai/flows/generate-product-image";
 import { addProduct } from "@/lib/firestore";
 import type { Product } from "@/lib/types";
+import { generateBusinessInsights } from "@/ai/flows/generate-business-insights";
+import type { GenerateBusinessInsightsInput, GenerateBusinessInsightsOutput } from "@/ai/flows/generate-business-insights";
 
 
 export async function getStockForecast(
@@ -96,5 +98,22 @@ export async function bulkAddProducts(products: Omit<Product, "id" | "historical
   } catch (error: any) {
     console.error("Error in bulkAddProducts:", error);
     return { success: false, count: 0, error: error.message || "An unexpected error occurred during the bulk upload." };
+  }
+}
+
+export async function getBusinessInsights(
+  input: GenerateBusinessInsightsInput
+): Promise<GenerateBusinessInsightsOutput> {
+  try {
+    const result = await generateBusinessInsights(input);
+    return result;
+  } catch (error) {
+    console.error("Error in getBusinessInsights:", error);
+    // Provide a structured error response that matches the expected output schema
+    return {
+      businessSummary: "An error occurred while generating the business summary. Please try again.",
+      topPerformingProducts: [],
+      recommendations: ["Could not generate recommendations due to an error."],
+    };
   }
 }

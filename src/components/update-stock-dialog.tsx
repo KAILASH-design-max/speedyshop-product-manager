@@ -3,7 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Barcode as BarcodeIcon } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
+import { Barcode as BarcodeIcon } from "lucide-react";
 import { useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
