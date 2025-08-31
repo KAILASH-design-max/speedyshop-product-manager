@@ -16,6 +16,7 @@ export interface Product {
   subcategory?: string;
   supplierId?: string;
   weight?: string;
+  currency?: string;
   createdAt?: any; // Using `any` for Firebase Timestamp flexibility
   updatedAt?: any; // Using `any` for Firebase Timestamp flexibility
 }
