@@ -8,7 +8,7 @@ import { generateProductCategory } from "@/ai/flows/generate-product-category";
 import type { GenerateProductCategoryInput, GenerateProductCategoryOutput } from "@/ai/flows/generate-product-category";
 import { suggestProductName } from "@/ai/flows/suggest-product-name";
 import type { SuggestProductNameInput, SuggestProductNameOutput } from "@/ai/flows/suggest-product-name";
-import { addProduct } from "@/lib/firestore";
+import { addProduct, getAuthenticatedUserProfile } from "@/lib/firestore";
 import type { Product } from "@/lib/types";
 import { generateBusinessInsights } from "@/ai/flows/generate-business-insights";
 import type { GenerateBusinessInsightsInput, GenerateBusinessInsightsOutput } from "@/ai/flows/generate-business-insights";
@@ -18,15 +18,14 @@ export async function getStockForecast(
   input: ForecastStockInput
 ): Promise<ForecastStockOutput> {
   try {
+    await getAuthenticatedUserProfile(); // Secure: All logged-in users can forecast
     const result = await forecastStock(input);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getStockForecast:", error);
-    // In a real app, you'd have more robust error logging and user feedback.
     return {
       forecastedStockNeeds: "[]",
-      analysis:
-        "An error occurred while generating the forecast. Please check the historical data format and try again.",
+      analysis: error.message || "An error occurred while generating the forecast.",
     };
   }
 }
@@ -35,12 +34,13 @@ export async function getAIProductDescription(
   input: GenerateProductDescriptionInput
 ): Promise<GenerateProductDescriptionOutput> {
   try {
+    await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
     const result = await generateProductDescription(input);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getAIProductDescription:", error);
     return {
-      description: "Sorry, we couldn't generate a description at this time. Please try again.",
+      description: error.message || "Sorry, we couldn't generate a description at this time.",
     };
   }
 }
@@ -49,9 +49,10 @@ export async function getAIProductCategory(
   input: GenerateProductCategoryInput
 ): Promise<GenerateProductCategoryOutput> {
   try {
+    await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
     const result = await generateProductCategory(input);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getAIProductCategory:", error);
     return {
       category: "",
@@ -64,9 +65,10 @@ export async function getAIProductName(
   input: SuggestProductNameInput
 ): Promise<SuggestProductNameOutput> {
   try {
+    await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
     const result = await suggestProductName(input);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getAIProductName:", error);
     return {
       productName: "",
@@ -76,6 +78,7 @@ export async function getAIProductName(
 
 export async function bulkAddProducts(products: Omit<Product, "id" | "historicalData">[]): Promise<{ success: boolean; count: number; error?: string }> {
   try {
+    await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
     const promises = products.map(product => addProduct(product));
     await Promise.all(promises);
     return { success: true, count: products.length };
@@ -89,13 +92,13 @@ export async function getBusinessInsights(
   input: GenerateBusinessInsightsInput
 ): Promise<GenerateBusinessInsightsOutput> {
   try {
+    await getAuthenticatedUserProfile(); // Secure: All logged-in users can view reports
     const result = await generateBusinessInsights(input);
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error in getBusinessInsights:", error);
-    // Provide a structured error response that matches the expected output schema
     return {
-      businessSummary: "An error occurred while generating the business summary. Please try again.",
+      businessSummary: error.message || "An error occurred while generating the business summary.",
       topPerformingProducts: [],
       recommendations: ["Could not generate recommendations due to an error."],
     };
