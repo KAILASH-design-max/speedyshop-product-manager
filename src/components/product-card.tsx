@@ -1,3 +1,4 @@
+
 "use client";
 
 import { MoreVertical, Edit, Trash2, TrendingUp, Package, AlertTriangle } from "lucide-react";
@@ -23,9 +24,16 @@ interface ProductCardProps {
 export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, hasWriteAccess }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
-  const initialImageUrl = product.images && product.images.length > 0 ? product.images[0] : `https://picsum.photos/seed/${product.id}/400/300`;
+  
+  const getSafeImageUrl = () => {
+    const firstImage = product.images && product.images.length > 0 ? product.images[0] : '';
+    if (firstImage && (firstImage.startsWith('http://') || firstImage.startsWith('https://'))) {
+      return firstImage;
+    }
+    return `https://picsum.photos/seed/${product.id}/400/300`;
+  };
 
-  const [imageUrl, setImageUrl] = useState(initialImageUrl);
+  const [imageUrl, setImageUrl] = useState(getSafeImageUrl());
 
   const handleImageError = () => {
     setImageUrl(`https://picsum.photos/seed/${product.id}/400/300`);
