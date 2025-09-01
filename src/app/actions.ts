@@ -13,8 +13,6 @@ import { addProduct, getUserProfile } from "@/lib/firestore";
 import type { Product, UserProfile } from "@/lib/types";
 import { generateBusinessInsights } from "@/ai/flows/generate-business-insights";
 import type { GenerateBusinessInsightsInput, GenerateBusinessInsightsOutput } from "@/ai/flows/generate-business-insights";
-import { generateProductImage } from "@/ai/flows/generate-product-image";
-import type { GenerateProductImageInput, GenerateProductImageOutput } from "@/ai/flows/generate-product-image";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
 import { adminApp } from "@/lib/firebase-admin";
@@ -141,21 +139,6 @@ export async function getBusinessInsights(
       businessSummary: error.message || "An error occurred while generating the business summary.",
       topPerformingProducts: [],
       recommendations: ["Could not generate recommendations due to an error."],
-    };
-  }
-}
-
-export async function getAIProductImage(
-  input: GenerateProductImageInput
-): Promise<GenerateProductImageOutput> {
-  try {
-    await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
-    const result = await generateProductImage(input);
-    return result;
-  } catch (error: any) {
-    console.error("Error in getAIProductImage:", error);
-    return {
-      imageUrl: "",
     };
   }
 }

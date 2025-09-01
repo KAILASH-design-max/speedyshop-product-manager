@@ -14,7 +14,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product, Supplier } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAIProductDescription, getAIProductCategory, getAIProductName, getAIProductImage } from "@/app/actions";
+import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { getSuppliers } from "@/lib/firestore";
 
@@ -75,7 +75,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
   const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
   const [isGeneratingName, setIsGeneratingName] = useState(false);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const { toast } = useToast();
   
@@ -215,36 +214,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     }
   };
 
-  const handleGenerateImage = async () => {
-    const { name, category } = form.getValues();
-    if (!name || !category) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please enter a Product Name and Category first.",
-      });
-      return;
-    }
-
-    setIsGeneratingImage(true);
-    try {
-      const result = await getAIProductImage({ productName: name, category });
-      if (result.imageUrl) {
-        const currentUrls = form.getValues("imageUrls") || "";
-        const newUrls = `${result.imageUrl}\n${currentUrls}`.trim();
-        form.setValue("imageUrls", newUrls, { shouldValidate: true });
-      }
-    } catch (error) {
-       toast({
-        variant: "destructive",
-        title: "Image Generation Failed",
-        description: "Could not generate an image. Please try again.",
-      });
-    } finally {
-      setIsGeneratingImage(false);
-    }
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -281,16 +250,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             <FormItem>
                <div className="flex items-center justify-between">
                   <FormLabel>Product Image URLs</FormLabel>
-                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleGenerateImage}
-                    disabled={isGeneratingImage}
-                  >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    {isGeneratingImage ? "Generating..." : "Generate with AI"}
-                  </Button>
                </div>
               <FormControl>
                 <Textarea placeholder="https://example.com/image1.png&#x0a;https://example.com/image2.png" {...field} />
@@ -304,12 +263,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         />
         
         <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center overflow-hidden">
-            {isGeneratingImage ? (
-               <div className="flex flex-col items-center text-muted-foreground">
-                  <Sparkles className="h-8 w-8 mb-2 animate-spin" />
-                  <p>Generating Image...</p>
-               </div>
-            ) : isValidUrl ? (
+            {isValidUrl ? (
               <Image src={firstImageUrl} alt="Product image" width={400} height={400} className="w-full h-full object-contain" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
