@@ -16,7 +16,6 @@ import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "./ui/skeleton";
 import { getSuppliers } from "@/lib/firestore";
 
 const formSchema = z.object({
@@ -114,6 +113,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
   const imageUrls = form.watch("imageUrls");
   const firstImageUrl = imageUrls?.split('\n')[0].trim();
+  const isValidHttpUrl = firstImageUrl && (firstImageUrl.startsWith('http://') || firstImageUrl.startsWith('https://'));
   
   const handleGenerateDescription = async () => {
     const { name, category } = form.getValues();
@@ -250,7 +250,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         />
         
         <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center">
-            {firstImageUrl ? (
+            {isValidHttpUrl ? (
               <Image src={firstImageUrl} alt="Product image" layout="fill" objectFit="contain" className="rounded-md" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
