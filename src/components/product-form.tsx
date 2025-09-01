@@ -44,27 +44,27 @@ interface ProductFormProps {
 }
 
 const categoryData = {
-  "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)", "Buns & Pav", "Eggs", "Butter & Margarine", "Cheese & Paneer", "Ghee"],
-  "Fruits & Vegetables": ["Fresh Fruits", "Fresh Vegetables", "Herbs & Seasonings", "Exotic Fruits & Veggies", "Organic Fruits & Vegetables", "Cut & Peeled (Ready-to-Cook)"],
-  "Breakfast & Instant Food": ["Breakfast Cereals", "Instant Noodles & Pasta", "Ready-to-Eat Meals", "Poha & Upma Mix", "Frozen Snacks", "Microwave Meals"],
-  "Cold Drinks & Juices": ["Soft Drinks", "Packaged Water", "Fruit Juices", "Energy & Sports Drinks", "Flavored Water", "Coconut Water"],
-  "Snacks & Munchies": ["Chips & Crisps", "Namkeen & Mixtures", "Popcorn", "Roasted Snacks", "Dry Fruits & Nuts", "Healthy Snacks & Energy Bars"],
-  "Bakery & Biscuits": ["Bread & Buns", "Cakes & Muffins", "Cookies & Biscuits", "Rusk & Toast", "Croissants & Pastries"],
-  "Tea, Coffee & Health Drink": ["Tea (Regular & Green)", "Coffee (Instant & Ground)", "Health Drinks (Bournvita, Horlicks)", "Malt Drinks & Hot Chocolate", "Herbal & Detox Drinks"],
-  "Atta, Rice & Dal": ["Wheat Flour & Atta", "Basmati Rice", "Non-Basmati Rice", "Pulses & Lentils", "Sooji & Besan", "Poha & Flattened Rice"],
-  "Masala, Oil & More": ["Spices & Masalas", "Edible Oils & Ghee", "Salt & Sugar", "Hing & Asafoetida", "Pickles & Papad", "Baking Essentials"],
-  "Sweet Tooth": ["Chocolates", "Indian Sweets (Mithai)", "Candy & Lollipops", "Toffees", "Dessert Mixes", "Ice Creams & Frozen Desserts"],
-  "Sauces & Spreads": ["Tomato Ketchup", "Mayonnaise", "Peanut Butter", "Jam & Honey", "Chutneys & Dips", "Cooking Sauces (Soy, Chili, Pasta Sauce)"],
-  "Chicken, Meat & Fish": ["Fresh Chicken", "Fresh Mutton", "Fish & Seafood", "Frozen Meat", "Processed Meat (Sausages, Salami)", "Eggs"],
-  "Organic & Healthy Living": ["Organic Atta, Rice & Dal", "Organic Fruits & Vegetables", "Organic Snacks", "Organic Oils & Spices", "Superfoods (Seeds, Quinoa, Chia)"],
-  "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare", "Baby Health", "Feeding Bottles & Accessories"],
-  "Pharma & Wellness": ["OTC Medicines", "Health Supplements", "First Aid", "Immunity Boosters", "Masks & Sanitizers"],
-  "Cleaning Essentials": ["Detergents & Fabric Care", "Dishwashing Essentials", "Surface Cleaners", "Toilet Cleaners", "Mops & Scrubs", "Air Fresheners"],
-  "Home & Office": ["Stationery", "Kitchen Essentials", "Storage & Containers", "Tools & Hardware", "Disposables & Party Supplies"],
-  "Personal Care": ["Hair Care", "Skin Care", "Bath & Body", "Oral Care", "Shaving & Grooming", "Feminine Hygiene"],
-  "Pet Care": ["Dog Food", "Cat Food", "Pet Treats", "Pet Grooming", "Pet Accessories", "Pet Health"],
-  "Paan Corner": ["Paan Ingredients", "Mouth Fresheners", "Supari & Mukhwas", "Flavored Tobacco (If legal)"],
-  "SpeedyBistro": ["Burgers & Sandwiches", "Pizzas", "Rolls & Wraps", "Momos & Dumplings", "Pasta", "Desserts & Beverages"],
+    "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)", "Buns & Pav", "Eggs", "Butter & Margarine", "Cheese & Paneer", "Ghee"],
+    "Fruits & Vegetables": ["Fresh Fruits", "Fresh Vegetables", "Herbs & Seasonings", "Exotic Fruits & Veggies", "Organic Fruits & Vegetables", "Cut & Peeled (Ready-to-Cook)"],
+    "Breakfast & Instant Food": ["Breakfast Cereals", "Instant Noodles & Pasta", "Ready-to-Eat Meals", "Poha & Upma Mix", "Frozen Snacks", "Microwave Meals"],
+    "Cold Drinks & Juices": ["Soft Drinks", "Packaged Water", "Fruit Juices", "Energy & Sports Drinks", "Flavored Water", "Coconut Water"],
+    "Snacks & Munchies": ["Chips & Crisps", "Namkeen & Mixtures", "Popcorn", "Roasted Snacks", "Dry Fruits & Nuts", "Healthy Snacks & Energy Bars"],
+    "Bakery & Biscuits": ["Bread & Buns", "Cakes & Muffins", "Cookies & Biscuits", "Rusk & Toast", "Croissants & Pastries"],
+    "Tea, Coffee & Health Drink": ["Tea (Regular & Green)", "Coffee (Instant & Ground)", "Health Drinks (Bournvita, Horlicks)", "Malt Drinks & Hot Chocolate", "Herbal & Detox Drinks"],
+    "Atta, Rice & Dal": ["Wheat Flour & Atta", "Basmati Rice", "Non-Basmati Rice", "Pulses & Lentils", "Sooji & Besan", "Poha & Flattened Rice"],
+    "Masala, Oil & More": ["Spices & Masalas", "Edible Oils & Ghee", "Salt & Sugar", "Hing & Asafoetida", "Pickles & Papad", "Baking Essentials"],
+    "Sweet Tooth": ["Chocolates", "Indian Sweets (Mithai)", "Candy & Lollipops", "Toffees", "Dessert Mixes", "Ice Creams & Frozen Desserts"],
+    "Sauces & Spreads": ["Tomato Ketchup", "Mayonnaise", "Peanut Butter", "Jam & Honey", "Chutneys & Dips", "Cooking Sauces (Soy, Chili, Pasta Sauce)"],
+    "Chicken, Meat & Fish": ["Fresh Chicken", "Fresh Mutton", "Fish & Seafood", "Frozen Meat", "Processed Meat (Sausages, Salami)", "Eggs"],
+    "Organic & Healthy Living": ["Organic Atta, Rice & Dal", "Organic Fruits & Vegetables", "Organic Snacks", "Organic Oils & Spices", "Superfoods (Seeds, Quinoa, Chia)"],
+    "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare", "Baby Health", "Feeding Bottles & Accessories"],
+    "Pharma & Wellness": ["OTC Medicines", "Health Supplements", "First Aid", "Immunity Boosters", "Masks & Sanitizers"],
+    "Cleaning Essentials": ["Detergents & Fabric Care", "Dishwashing Essentials", "Surface Cleaners", "Toilet Cleaners", "Mops & Scrubs", "Air Fresheners"],
+    "Home & Office": ["Stationery", "Kitchen Essentials", "Storage & Containers", "Tools & Hardware", "Disposables & Party Supplies"],
+    "Personal Care": ["Hair Care", "Skin Care", "Bath & Body", "Oral Care", "Shaving & Grooming", "Feminine Hygiene"],
+    "Pet Care": ["Dog Food", "Cat Food", "Pet Treats", "Pet Grooming", "Pet Accessories", "Pet Health"],
+    "Paan Corner": ["Paan Ingredients", "Mouth Fresheners", "Supari & Mukhwas", "Flavored Tobacco (If legal)"],
+    "SpeedyBistro": ["Burgers & Sandwiches", "Pizzas", "Rolls & Wraps", "Momos & Dumplings", "Pasta", "Desserts & Beverages"],
 };
 
 
@@ -117,7 +117,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
   const imageUrls = form.watch("imageUrls");
   const selectedCategory = form.watch("category") as keyof typeof categoryData;
-  const firstImageUrl = imageUrls?.split('\n')[0].trim();
+  const firstImageUrl = imageUrls?.split('\n')[0].trim() || "";
   const isValidUrl = firstImageUrl && (firstImageUrl.startsWith('http://') || firstImageUrl.startsWith('https://') || firstImageUrl.startsWith('data:image'));
 
   useEffect(() => {
@@ -303,14 +303,14 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           )}
         />
         
-        <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center">
+        <div className="w-full aspect-video relative bg-muted rounded-md flex items-center justify-center overflow-hidden">
             {isGeneratingImage ? (
                <div className="flex flex-col items-center text-muted-foreground">
                   <Sparkles className="h-8 w-8 mb-2 animate-spin" />
                   <p>Generating Image...</p>
                </div>
             ) : isValidUrl ? (
-              <Image src={firstImageUrl} alt="Product image" layout="fill" objectFit="contain" className="rounded-md" />
+              <Image src={firstImageUrl} alt="Product image" width={400} height={400} className="w-full h-full object-contain" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
                 <ImageIcon className="h-8 w-8 mb-2" />
@@ -549,6 +549,3 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     </Form>
   );
 }
-
-    
-    
