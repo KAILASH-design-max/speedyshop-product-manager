@@ -32,6 +32,14 @@ const prompt = ai.definePrompt({
   name: 'generateProductDescriptionPrompt',
   input: { schema: GenerateProductDescriptionInputSchema },
   output: { schema: GenerateProductDescriptionOutputSchema },
+  config: {
+    safetySettings: [
+        {
+            category: 'HARM_CATEGORY_HARASSMENT',
+            threshold: 'BLOCK_ONLY_HIGH',
+        }
+    ]
+  },
   prompt: `You are a marketing expert. Write a compelling and informative product description for the following product, following the exact structure of the example.
 
 Product Name: {{productName}}
