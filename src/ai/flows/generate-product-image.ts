@@ -42,7 +42,7 @@ const generateImageFlow = ai.defineFlow(
       The product should be on a clean, white background. The image should be well-lit and visually appealing for a retail website.`,
     });
 
-    if (!media.url) {
+    if (!media || !media.url) {
       throw new Error('Image generation failed to produce an image.');
     }
 
