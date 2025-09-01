@@ -8,10 +8,47 @@ import { generateProductCategory } from "@/ai/flows/generate-product-category";
 import type { GenerateProductCategoryInput, GenerateProductCategoryOutput } from "@/ai/flows/generate-product-category";
 import { suggestProductName } from "@/ai/flows/suggest-product-name";
 import type { SuggestProductNameInput, SuggestProductNameOutput } from "@/ai/flows/suggest-product-name";
-import { addProduct, getAuthenticatedUserProfile } from "@/lib/firestore";
-import type { Product } from "@/lib/types";
+import { addProduct, getUserProfile } from "@/lib/firestore";
+import type { Product, UserProfile } from "@/lib/types";
 import { generateBusinessInsights } from "@/ai/flows/generate-business-insights";
 import type { GenerateBusinessInsightsInput, GenerateBusinessInsightsOutput } from "@/ai/flows/generate-business-insights";
+import { cookies } from "next/headers";
+import { getAuth } from "firebase-admin/auth";
+import { adminApp } from "@/lib/firebase-admin";
+
+
+// SECURITY HELPER
+/**
+ * Retrieves the authenticated user's profile and checks their role.
+ * Throws an error if the user is not authenticated or does not have the required role.
+ * @param allowedRoles - An optional array of roles that are allowed to perform the action. If not provided, any authenticated user is allowed.
+ * @returns The user's profile.
+ */
+async function getAuthenticatedUserProfile(allowedRoles?: UserProfile['role'][]): Promise<UserProfile> {
+  const sessionCookie = cookies().get("__session")?.value;
+
+  if (!sessionCookie) {
+    throw new Error("You must be logged in to perform this action.");
+  }
+  
+  const decodedToken = await getAuth(adminApp).verifySessionCookie(sessionCookie, true);
+  
+  if (!decodedToken.uid) {
+    throw new Error("You must be logged in to perform this action.");
+  }
+
+  const userProfile = await getUserProfile(decodedToken.uid);
+
+  if (!userProfile) {
+    throw new Error("User profile not found.");
+  }
+
+  if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
+    throw new Error("You do not have permission to perform this action.");
+  }
+
+  return userProfile;
+}
 
 
 export async function getStockForecast(

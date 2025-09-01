@@ -20,7 +20,6 @@ import {
 } from "firebase/firestore";
 import { app } from "./firebase";
 import type { Product, UserProfile, Order, Notification, Supplier } from "./types";
-import { auth } from "./auth";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
@@ -238,35 +237,4 @@ export async function updateSupplier(supplierId: string, updates: Partial<Omit<S
 export async function deleteSupplier(supplierId: string): Promise<void> {
   const supplierDoc = doc(db, "suppliers", supplierId);
   await deleteDoc(supplierDoc);
-}
-
-
-// SECURITY
-/**
- * Retrieves the authenticated user's profile and checks their role.
- * Throws an error if the user is not authenticated or does not have the required role.
- * @param allowedRoles - An optional array of roles that are allowed to perform the action. If not provided, any authenticated user is allowed.
- * @returns The user's profile.
- */
-export async function getAuthenticatedUserProfile(allowedRoles?: UserProfile['role'][]): Promise<UserProfile> {
-  // This is a temporary workaround to get the current user in a server action.
-  // In a real app, you would have a more robust way of getting the current user.
-  // For now we will assume that there is no logged in user.
-  const user = auth.currentUser;
-
-  if (!user) {
-    throw new Error("You must be logged in to perform this action.");
-  }
-
-  const userProfile = await getUserProfile(user.uid);
-
-  if (!userProfile) {
-    throw new Error("User profile not found.");
-  }
-
-  if (allowedRoles && !allowedRoles.includes(userProfile.role)) {
-    throw new Error("You do not have permission to perform this action.");
-  }
-
-  return userProfile;
 }
