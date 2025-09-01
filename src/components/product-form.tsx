@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import type { Product, Supplier } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getAIProductDescription, getAIProductCategory, getAIProductName, getAIProductImage } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { getSuppliers } from "@/lib/firestore";
@@ -67,6 +67,7 @@ const categoryData = {
   "SpeedyBistro": ["Burgers & Sandwiches", "Pizzas", "Rolls & Wraps", "Momos & Dumplings", "Pasta", "Desserts & Beverages"],
 };
 
+
 const productCategories = Object.keys(categoryData);
 
 
@@ -117,7 +118,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   const imageUrls = form.watch("imageUrls");
   const selectedCategory = form.watch("category") as keyof typeof categoryData;
   const firstImageUrl = imageUrls?.split('\n')[0].trim();
-  const isValidHttpUrl = firstImageUrl && (firstImageUrl.startsWith('http://') || firstImageUrl.startsWith('https://') || firstImageUrl.startsWith('data:image'));
+  const isValidUrl = firstImageUrl && (firstImageUrl.startsWith('http://') || firstImageUrl.startsWith('https://') || firstImageUrl.startsWith('data:image'));
 
   useEffect(() => {
     // Reset subcategory when category changes
@@ -308,7 +309,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
                   <Sparkles className="h-8 w-8 mb-2 animate-spin" />
                   <p>Generating Image...</p>
                </div>
-            ) : isValidHttpUrl ? (
+            ) : isValidUrl ? (
               <Image src={firstImageUrl} alt="Product image" layout="fill" objectFit="contain" className="rounded-md" />
             ) : (
               <div className="text-muted-foreground text-sm flex flex-col items-center">
@@ -549,4 +550,5 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   );
 }
 
+    
     
