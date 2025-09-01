@@ -43,29 +43,30 @@ interface ProductFormProps {
   buttonText: string;
 }
 
-const productCategories = [
-  "Daily Bread & Eggs",
-  "Fruits & Vegetables",
-  "Breakfast & Instant Food",
-  "Cold Drinks & Juices",
-  "Snacks & Munchies",
-  "Bakery & Biscuits",
-  "Tea, Coffee & Health Drink",
-  "Atta, Rice & Dal",
-  "Masala, Oil & More",
-  "Sweet Tooth",
-  "Sauces & Spreads",
-  "Chicken, Meat & Fish",
-  "Organic & Healthy Living",
-  "Baby Care",
-  "Pharma & Wellness",
-  "Cleaning Essentials",
-  "Home & Office",
-  "Personal Care",
-  "Pet Care",
-  "Paan Corner",
-  "SpeedyBistro",
-];
+const categoryData = {
+  "Vegetables & Fruits": ["Fresh Fruits", "Fresh Vegetables", "Herbs & Seasonings", "Exotic Fruits & Veggies", "Organic Fruits & Vegetables", "Cut & Peeled (Ready to Cook)"],
+  "Dairy & Breakfast": ["Milk & Toned Milk", "Curd & Yogurt", "Butter & Margarine", "Cheese & Paneer", "Eggs", "Breakfast Cereals", "Ghee", "Milk Powder & Condensed Milk"],
+  "Munchies": ["Chips & Crisps", "Namkeen & Mixtures", "Popcorn", "Roasted Snacks", "Energy Bars & Healthy Snacks", "Dry Fruits & Nuts", "Khakra & Mathri"],
+  "Cold Drinks & Juices": ["Soft Drinks", "Packaged Water", "Fruit Juices", "Energy & Sports Drinks", "Flavored Water", "Coconut Water", "Mixers (Tonic, Soda)"],
+  "Instant & Frozen Food": ["Instant Noodles & Pasta", "Frozen Snacks", "Ready-to-Eat Meals", "Frozen Parathas & Rotis", "Instant Soup", "Instant Poha & Upma", "Microwave Meals"],
+  "Tea, Coffee & Drinks": ["Tea (Regular & Green)", "Coffee (Instant & Ground)", "Hot Chocolate & Malt Drinks", "Health Drinks (Bournvita, Horlicks)", "Herbal & Detox Drinks"],
+  "Bakery & Biscuits": ["Bread (White, Brown, Multigrain)", "Buns & Pav", "Cakes & Muffins", "Cookies & Biscuits", "Rusk & Toast", "Croissants & Pastries"],
+  "Sweet Tooth": ["Chocolates", "Indian Sweets (Mithai)", "Candy & Lollipops", "Toffees", "Dessert Mixes", "Ice Creams & Frozen Desserts"],
+  "Atta, Rice & Dal": ["Wheat Flour & Atta", "Basmati Rice", "Non-Basmati Rice", "Pulses & Lentils", "Sooji & Besan", "Poha & Flattened Rice"],
+  "Masala, Oil & More": ["Spices & Masalas", "Edible Oils & Ghee", "Salt & Sugar", "Pickles & Papad", "Baking Essentials", "Hing & Asafoetida"],
+  "Sauces & Spreads": ["Tomato Ketchup", "Mayonnaise", "Peanut Butter", "Jam & Honey", "Chutneys & Dips", "Cooking Sauces (Soy, Chili)"],
+  "Chicken, Meat & Fish": ["Fresh Chicken", "Fresh Mutton", "Fresh Fish & Seafood", "Frozen Meat & Seafood", "Eggs", "Processed Meat (Sausages, Salami)"],
+  "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare", "Baby Health", "Feeding Bottles & Accessories"],
+  "Pharma & Wellness": ["OTC Medicines", "Health Supplements", "Immunity Boosters", "First Aid", "Personal Protection (Masks, Sanitizers)"],
+  "Cleaning Essentials": ["Detergents & Fabric Care", "Dishwashing Essentials", "Surface Cleaners", "Toilet Cleaners", "Mops & Scrubs", "Air Fresheners"],
+  "Home & Office": ["Stationery", "Kitchen Essentials", "Storage & Containers", "Tools & Hardware", "Disposables & Party Supplies"],
+  "Personal Care": ["Hair Care", "Skin Care", "Bath & Body", "Oral Care", "Shaving & Grooming", "Feminine Hygiene"],
+  "Pet Care": ["Pet Food (Dog, Cat)", "Pet Treats", "Pet Grooming", "Pet Accessories", "Pet Health"],
+  "Paan Corner": ["Paan Ingredients", "Mouth Fresheners", "Supari & Mukhwas", "Flavored Tobacco (if legal)"],
+  "SpeedyBistro": ["Burgers & Sandwiches", "Pizzas", "Rolls & Wraps", "Momos & Dumplings", "Pasta", "Desserts & Beverages"],
+};
+
+const productCategories = Object.keys(categoryData);
 
 
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
@@ -112,8 +113,16 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
   });
 
   const imageUrls = form.watch("imageUrls");
+  const selectedCategory = form.watch("category") as keyof typeof categoryData;
   const firstImageUrl = imageUrls?.split('\n')[0].trim();
   const isValidHttpUrl = firstImageUrl && (firstImageUrl.startsWith('http://') || firstImageUrl.startsWith('https://'));
+
+  useEffect(() => {
+    // Reset subcategory when category changes
+    if (defaultValues?.category !== selectedCategory) {
+      form.setValue("subcategory", "");
+    }
+  }, [selectedCategory, form, defaultValues?.category]);
   
   const handleGenerateDescription = async () => {
     const { name, category } = form.getValues();
@@ -300,9 +309,18 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             name="subcategory"
             render={({ field }) => (
               <FormItem>
-                <FormControl>
-                  <Input placeholder="e.g., Fresh Vegetables" {...field} />
-                </FormControl>
+                <Select onValueChange={field.onChange} value={field.value} disabled={!selectedCategory}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a subcategory" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categoryData[selectedCategory]?.map((subcategory) => (
+                      <SelectItem key={subcategory} value={subcategory}>{subcategory}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}
