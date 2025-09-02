@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { User } from "firebase/auth";
@@ -18,8 +19,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        const idToken = await user.getIdToken();
+        // Create session cookie
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idToken }),
+        });
+      } else {
+        // Clear session cookie
+        await fetch('/api/auth/logout', { method: 'POST' });
+      }
       setLoading(false);
     });
     return () => unsubscribe();
