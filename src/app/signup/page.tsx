@@ -56,10 +56,11 @@ export default function SignUpPage() {
         phoneNumber: values.phoneNumber,
         jobTitle: values.jobTitle,
         department: values.department,
+        status: "active",
         photoURL: `https://avatar.vercel.sh/${values.name}.png` // Generate a default avatar
       });
 
-      router.push("/suppliers");
+      router.push("/");
     } catch (error: any) {
       toast({
         variant: "destructive",

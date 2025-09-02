@@ -29,6 +29,7 @@ export interface UserProfile {
   phoneNumber?: string;
   jobTitle?: string;
   department?: string;
+  status?: 'active' | 'inactive';
 }
 
 export interface OrderItem {
