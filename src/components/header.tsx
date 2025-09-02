@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard } from "lucide-react";
+import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
@@ -98,6 +98,12 @@ export function Header() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                     <DropdownMenuItem asChild>
+                      <Link href="/profile">
+                        <UserIcon className="mr-2 h-4 w-4" />
+                        <span>My Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={logout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Log out</span>
