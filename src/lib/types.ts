@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -25,6 +26,7 @@ export interface UserProfile {
   email: string;
   role: 'admin' | 'viewer' | 'inventory-manager';
   createdAt?: any;
+  updatedAt?: any;
   photoURL?: string;
   phoneNumber?: string;
   jobTitle?: string;

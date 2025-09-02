@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,11 +8,13 @@ import type { UserProfile } from "@/lib/types";
 import { getUserProfile } from "@/lib/firestore";
 import { Header } from "@/components/header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Barcode as BarcodeIcon, Mail, Phone, Briefcase, Building, UserCircle } from "lucide-react";
+import { Barcode as BarcodeIcon, Mail, Phone, Briefcase, Building, UserCircle, Edit } from "lucide-react";
 import { Button } from "./ui/button";
 import { UserBarcodeDialog } from "./user-barcode-dialog";
+import { EditUserProfileDialog, type UserProfileFormValues } from "./edit-user-profile-dialog";
+import { updateUserProfileAction } from "@/app/actions";
 
 export function UserProfilePage() {
   const { user } = useAuth();
@@ -19,12 +22,14 @@ export function UserProfilePage() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
 
-  useEffect(() => {
-    async function fetchProfile() {
+  const fetchProfile = async () => {
       if (user) {
         try {
+          setLoading(true);
           const profile = await getUserProfile(user.uid);
           setUserProfile(profile);
         } catch (error) {
@@ -39,8 +44,30 @@ export function UserProfilePage() {
         }
       }
     }
+  
+  useEffect(() => {
     fetchProfile();
   }, [user, toast]);
+  
+  const handleUpdateProfile = async (values: UserProfileFormValues) => {
+    setIsSaving(true);
+    const result = await updateUserProfileAction(values);
+    if (result.success) {
+      toast({
+        title: "Profile Updated",
+        description: "Your information has been successfully updated.",
+      });
+      await fetchProfile(); // Re-fetch the profile to show updated data
+      setIsEditOpen(false);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: result.error || "An unexpected error occurred.",
+      });
+    }
+    setIsSaving(false);
+  }
 
   const getInitials = (name?: string | null) => {
     if (!name) return 'U';
@@ -77,19 +104,25 @@ export function UserProfilePage() {
         <main className="flex-1 p-4 md:p-8 container mx-auto">
           <Card className="max-w-4xl mx-auto">
             <CardHeader>
-              <div className="flex items-center space-x-6">
-                <Avatar className="h-24 w-24 border-2 border-primary">
-                  <AvatarImage src={userProfile.photoURL ?? undefined} alt={userProfile.name} />
-                  <AvatarFallback className="text-3xl">{getInitials(userProfile.name)}</AvatarFallback>
-                </Avatar>
-                <div className="space-y-1">
-                  <CardTitle className="text-3xl">{userProfile.name}</CardTitle>
-                  <p className="text-muted-foreground">{userProfile.jobTitle || 'User'}</p>
-                   <div className="flex items-center pt-2">
-                     <span className={`inline-block h-3 w-3 rounded-full mr-2 ${userProfile.status === 'active' ? 'bg-green-500' : 'bg-gray-500'}`}></span>
-                    <span className="text-sm capitalize">{userProfile.status}</span>
+              <div className="flex justify-between items-start">
+                  <div className="flex items-center space-x-6">
+                    <Avatar className="h-24 w-24 border-2 border-primary">
+                      <AvatarImage src={userProfile.photoURL ?? undefined} alt={userProfile.name} />
+                      <AvatarFallback className="text-3xl">{getInitials(userProfile.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <CardTitle className="text-3xl">{userProfile.name}</CardTitle>
+                      <CardDescription className="text-base">{userProfile.jobTitle || 'User'}</CardDescription>
+                       <div className="flex items-center pt-2">
+                         <span className={`inline-block h-3 w-3 rounded-full mr-2 ${userProfile.status === 'active' ? 'bg-green-500' : 'bg-gray-500'}`}></span>
+                        <span className="text-sm capitalize">{userProfile.status}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  <Button variant="outline" onClick={() => setIsEditOpen(true)}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -121,6 +154,15 @@ export function UserProfilePage() {
         open={isBarcodeOpen}
         onOpenChange={setIsBarcodeOpen}
       />
+      {isEditOpen && (
+        <EditUserProfileDialog
+            userProfile={userProfile}
+            onUpdateProfile={handleUpdateProfile}
+            open={isEditOpen}
+            onOpenChange={setIsEditOpen}
+            isSaving={isSaving}
+        />
+      )}
     </>
   );
 }

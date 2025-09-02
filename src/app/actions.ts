@@ -1,7 +1,7 @@
 
 "use server";
 
-import { addProduct, getUserProfile } from "@/lib/firestore";
+import { addProduct, getUserProfile, updateUserProfile } from "@/lib/firestore";
 import type { Product, UserProfile } from "@/lib/types";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
@@ -51,5 +51,25 @@ export async function bulkAddProducts(products: Omit<Product, "id" | "historical
   } catch (error: any) {
     console.error("Error in bulkAddProducts:", error);
     return { success: false, count: 0, error: error.message || "An unexpected error occurred during the bulk upload." };
+  }
+}
+
+export async function updateUserProfileAction(
+  userData: Pick<UserProfile, 'name' | 'phoneNumber' | 'jobTitle' | 'department'>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const user = await getAuthenticatedUserProfile(); // Any authenticated user can update their own profile
+    
+    await updateUserProfile(user.uid, {
+      name: userData.name,
+      phoneNumber: userData.phoneNumber,
+      jobTitle: userData.jobTitle,
+      department: userData.department,
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error in updateUserProfileAction:", error);
+    return { success: false, error: error.message || "An unexpected error occurred." };
   }
 }

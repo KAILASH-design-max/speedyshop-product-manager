@@ -1,3 +1,4 @@
+
 import {
   getFirestore,
   collection,
@@ -109,6 +110,19 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   }
   return null;
 }
+
+// UPDATE user profile
+export async function updateUserProfile(
+  uid: string,
+  updates: Partial<Omit<UserProfile, "id">>
+): Promise<void> {
+  const userDoc = doc(db, "users", uid);
+  await updateDoc(userDoc, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+}
+
 
 // GET all orders
 export async function getOrders(): Promise<Order[]> {
