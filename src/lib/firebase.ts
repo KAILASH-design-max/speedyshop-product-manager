@@ -5,8 +5,8 @@ import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = process.env.FIREBASE_WEBAPP_CONFIG 
-  ? JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG)
+const firebaseConfig = process.env.NEXT_PUBLIC_FIREBASE_WEBAPP_CONFIG
+  ? JSON.parse(process.env.NEXT_PUBLIC_FIREBASE_WEBAPP_CONFIG)
   : {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
