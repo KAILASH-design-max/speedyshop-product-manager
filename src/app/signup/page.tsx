@@ -52,7 +52,7 @@ export default function SignUpPage() {
         role: values.role,
       });
 
-      router.push("/");
+      router.push("/suppliers");
     } catch (error: any) {
       toast({
         variant: "destructive",

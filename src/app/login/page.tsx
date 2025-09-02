@@ -46,7 +46,7 @@ export default function LoginPage() {
       const userProfile = await getUserProfile(user.uid);
 
       if (userProfile && (userProfile.role === 'inventory-manager' || userProfile.role === 'admin' || userProfile.role === 'viewer')) {
-        router.push("/");
+        router.push("/suppliers");
       } else {
         // Log out the user if they don't have the correct role
         await signOut(auth);
