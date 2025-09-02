@@ -4,7 +4,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Sparkles, Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -14,7 +14,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import type { Product, Supplier } from "@/lib/types";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAIProductDescription, getAIProductCategory, getAIProductName } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { getSuppliers } from "@/lib/firestore";
 
@@ -44,27 +43,27 @@ interface ProductFormProps {
 }
 
 const categoryData = {
-    "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)", "Buns & Pav", "Eggs", "Butter & Margarine", "Cheese & Paneer", "Ghee"],
-    "Fruits & Vegetables": ["Fresh Fruits", "Fresh Vegetables", "Herbs & Seasonings", "Exotic Fruits & Veggies", "Organic Fruits & Vegetables", "Cut & Peeled (Ready-to-Cook)"],
-    "Breakfast & Instant Food": ["Breakfast Cereals", "Instant Noodles & Pasta", "Ready-to-Eat Meals", "Poha & Upma Mix", "Frozen Snacks", "Microwave Meals"],
-    "Cold Drinks & Juices": ["Soft Drinks", "Packaged Water", "Fruit Juices", "Energy & Sports Drinks", "Flavored Water", "Coconut Water"],
-    "Snacks & Munchies": ["Chips & Crisps", "Namkeen & Mixtures", "Popcorn", "Roasted Snacks", "Dry Fruits & Nuts", "Healthy Snacks & Energy Bars"],
-    "Bakery & Biscuits": ["Bread & Buns", "Cakes & Muffins", "Cookies & Biscuits", "Rusk & Toast", "Croissants & Pastries"],
-    "Tea, Coffee & Health Drink": ["Tea (Regular & Green)", "Coffee (Instant & Ground)", "Health Drinks (Bournvita, Horlicks)", "Malt Drinks & Hot Chocolate", "Herbal & Detox Drinks"],
-    "Atta, Rice & Dal": ["Wheat Flour & Atta", "Basmati Rice", "Non-Basmati Rice", "Pulses & Lentils", "Sooji & Besan", "Poha & Flattened Rice"],
-    "Masala, Oil & More": ["Spices & Masalas", "Edible Oils & Ghee", "Salt & Sugar", "Hing & Asafoetida", "Pickles & Papad", "Baking Essentials"],
-    "Sweet Tooth": ["Chocolates", "Indian Sweets (Mithai)", "Candy & Lollipops", "Toffees", "Dessert Mixes", "Ice Creams & Frozen Desserts"],
-    "Sauces & Spreads": ["Tomato Ketchup", "Mayonnaise", "Peanut Butter", "Jam & Honey", "Chutneys & Dips", "Cooking Sauces (Soy, Chili, Pasta Sauce)"],
-    "Chicken, Meat & Fish": ["Fresh Chicken", "Fresh Mutton", "Fish & Seafood", "Frozen Meat", "Processed Meat (Sausages, Salami)", "Eggs"],
-    "Organic & Healthy Living": ["Organic Atta, Rice & Dal", "Organic Fruits & Vegetables", "Organic Snacks", "Organic Oils & Spices", "Superfoods (Seeds, Quinoa, Chia)"],
-    "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare", "Baby Health", "Feeding Bottles & Accessories"],
-    "Pharma & Wellness": ["OTC Medicines", "Health Supplements", "First Aid", "Immunity Boosters", "Masks & Sanitizers"],
-    "Cleaning Essentials": ["Detergents & Fabric Care", "Dishwashing Essentials", "Surface Cleaners", "Toilet Cleaners", "Mops & Scrubs", "Air Fresheners"],
-    "Home & Office": ["Stationery", "Kitchen Essentials", "Storage & Containers", "Tools & Hardware", "Disposables & Party Supplies"],
-    "Personal Care": ["Hair Care", "Skin Care", "Bath & Body", "Oral Care", "Shaving & Grooming", "Feminine Hygiene"],
-    "Pet Care": ["Dog Food", "Cat Food", "Pet Treats", "Pet Grooming", "Pet Accessories", "Pet Health"],
-    "Paan Corner": ["Paan Ingredients", "Mouth Fresheners", "Supari & Mukhwas", "Flavored Tobacco (If legal)"],
-    "SpeedyBistro": ["Burgers & Sandwiches", "Pizzas", "Rolls & Wraps", "Momos & Dumplings", "Pasta", "Desserts & Beverages"],
+    "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)","Buns & Pav","Eggs","Butter & Margarine","Cheese & Paneer","Ghee",],
+    "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Herbs & Seasonings","Exotic Fruits & Veggies","Organic Fruits & Vegetables","Cut & Peeled (Ready-to-Cook)",],
+    "Breakfast & Instant Food": ["Breakfast Cereals","Instant Noodles & Pasta","Ready-to-Eat Meals","Poha & Upma Mix","Frozen Snacks","Microwave Meals",],
+    "Cold Drinks & Juices": ["Soft Drinks","Packaged Water","Fruit Juices","Energy & Sports Drinks","Flavored Water","Coconut Water",],
+    "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
+    "Bakery & Biscuits": ["Bread & Buns","Cakes & Muffins","Cookies & Biscuits","Rusk & Toast","Croissants & Pastries",],
+    "Tea, Coffee & Health Drink": ["Tea (Regular & Green)","Coffee (Instant & Ground)","Health Drinks (Bournvita, Horlicks)","Malt Drinks & Hot Chocolate","Herbal & Detox Drinks",],
+    "Atta, Rice & Dal": ["Wheat Flour & Atta","Basmati Rice","Non-Basmati Rice","Pulses & Lentils","Sooji & Besan","Poha & Flattened Rice",],
+    "Masala, Oil & More": ["Spices & Masalas","Edible Oils & Ghee","Salt & Sugar","Hing & Asafoetida","Pickles & Papad","Baking Essentials",],
+    "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
+    "Sauces & Spreads": ["Tomato Ketchup","Mayonnaise","Peanut Butter","Jam & Honey","Chutneys & Dips","Cooking Sauces (Soy, Chili, Pasta Sauce)",],
+    "Chicken, Meat & Fish": ["Fresh Chicken","Fresh Mutton","Fish & Seafood","Frozen Meat","Processed Meat (Sausages, Salami)","Eggs",],
+    "Organic & Healthy Living": ["Organic Atta, Rice & Dal","Organic Fruits & Vegetables","Organic Snacks","Organic Oils & Spices","Superfoods (Seeds, Quinoa, Chia)",],
+    "Baby Care": ["Baby Food & Formula","Diapers & Wipes","Baby Skincare","Baby Health","Feeding Bottles & Accessories",],
+    "Pharma & Wellness": ["OTC Medicines","Health Supplements","First Aid","Immunity Boosters","Masks & Sanitizers",],
+    "Cleaning Essentials": ["Detergents & Fabric Care","Dishwashing Essentials","Surface Cleaners","Toilet Cleaners","Mops & Scrubs","Air Fresheners",],
+    "Home & Office": ["Stationery","Kitchen Essentials","Storage & Containers","Tools & Hardware","Disposables & Party Supplies",],
+    "Personal Care": ["Hair Care","Skin Care","Bath & Body","Oral Care","Shaving & Grooming","Feminine Hygiene",],
+    "Pet Care": ["Dog Food","Cat Food","Pet Treats","Pet Grooming","Pet Accessories","Pet Health",],
+    "Paan Corner": ["Paan Ingredients","Mouth Fresheners","Supari & Mukhwas","Flavored Tobacco (If legal)",],
+    "Speedy Bistro": ["Burgers & Sandwiches","Pizzas","Rolls & Wraps","Momos & Dumplings","Pasta","Desserts & Beverages",],
 };
 
 
@@ -72,9 +71,6 @@ const productCategories = Object.keys(categoryData);
 
 
 export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductFormProps) {
-  const [isGeneratingDesc, setIsGeneratingDesc] = useState(false);
-  const [isGeneratingCategory, setIsGeneratingCategory] = useState(false);
-  const [isGeneratingName, setIsGeneratingName] = useState(false);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const { toast } = useToast();
   
@@ -125,94 +121,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
       form.setValue("subcategory", "");
     }
   }, [selectedCategory, form, defaultValues?.category]);
-  
-  const handleGenerateDescription = async () => {
-    const { name, category } = form.getValues();
-    if (!name || !category) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please enter a Product Name and Category first.",
-      });
-      return;
-    }
-
-    setIsGeneratingDesc(true);
-    try {
-      const result = await getAIProductDescription({
-        productName: name,
-        category: category,
-      });
-      form.setValue("description", result.description, { shouldValidate: true });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Generation Failed",
-        description: "Could not generate a description. Please try again.",
-      });
-    } finally {
-      setIsGeneratingDesc(false);
-    }
-  };
-
-  const handleGenerateCategory = async () => {
-    const { name } = form.getValues();
-    if (!name) {
-      toast({
-        variant: "destructive",
-        title: "Missing Product Name",
-        description: "Please enter a Product Name first to generate categories.",
-      });
-      return;
-    }
-
-    setIsGeneratingCategory(true);
-    try {
-      const result = await getAIProductCategory({ productName: name });
-      if (result.category) {
-        form.setValue("category", result.category, { shouldValidate: true });
-      }
-      if (result.subcategory) {
-        form.setValue("subcategory", result.subcategory, { shouldValidate: true });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Generation Failed",
-        description: "Could not generate categories. Please try again.",
-      });
-    } finally {
-      setIsGeneratingCategory(false);
-    }
-  };
-
-  const handleGenerateName = async () => {
-    const { category, description } = form.getValues();
-    if (!category) {
-      toast({
-        variant: "destructive",
-        title: "Missing Category",
-        description: "Please enter a Category first to generate a name.",
-      });
-      return;
-    }
-
-    setIsGeneratingName(true);
-    try {
-      const result = await getAIProductName({ category, description });
-      if (result.productName) {
-        form.setValue("name", result.productName, { shouldValidate: true });
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Generation Failed",
-        description: "Could not generate a product name. Please try again.",
-      });
-    } finally {
-      setIsGeneratingName(false);
-    }
-  };
 
   return (
     <Form {...form}>
@@ -222,19 +130,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
           name="name"
           render={({ field }) => (
             <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>Product Name</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleGenerateName}
-                  disabled={isGeneratingName}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  {isGeneratingName ? "Generating..." : "Generate with AI"}
-                </Button>
-              </div>
+              <FormLabel>Product Name</FormLabel>
               <FormControl>
                 <Input placeholder="e.g., Classic T-Shirt" {...field} />
               </FormControl>
@@ -275,17 +171,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         
         <div className="flex items-center justify-between">
             <FormLabel>Category & Subcategory</FormLabel>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleGenerateCategory}
-              disabled={isGeneratingCategory}
-            >
-              <Sparkles className="mr-2 h-4 w-4" />
-              {isGeneratingCategory ? "Generating..." : "Generate with AI"}
-            </Button>
-          </div>
+        </div>
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -480,19 +366,9 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
             <FormItem>
               <div className="flex items-center justify-between">
                 <FormLabel>Description</FormLabel>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleGenerateDescription}
-                  disabled={isGeneratingDesc}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  {isGeneratingDesc ? "Generating..." : "Generate with AI"}
-                </Button>
               </div>
               <FormControl>
-                <Textarea placeholder="Enter product description or generate one with AI." {...field} />
+                <Textarea placeholder="Enter product description." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

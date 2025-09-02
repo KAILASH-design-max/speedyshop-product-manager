@@ -21,7 +21,6 @@ import { StockReportChart } from "./stock-report-chart";
 import { EditProductDialog } from "./edit-product-dialog";
 import { DeleteProductAlert } from "./delete-product-alert";
 import { UpdateStockDialog } from "./update-stock-dialog";
-import { StockForecastingDialog } from "./stock-forecasting-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { BulkUploadDialog } from "./bulk-upload-dialog";
 import { bulkAddProducts } from "@/app/actions";
@@ -31,27 +30,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 
 
 const productCategories = [
-  "Daily Bread & Eggs",
-  "Fruits & Vegetables",
-  "Breakfast & Instant Food",
-  "Cold Drinks & Juices",
-  "Snacks & Munchies",
-  "Bakery & Biscuits",
-  "Tea, Coffee & Health Drink",
-  "Atta, Rice & Dal",
-  "Masala, Oil & More",
-  "Sweet Tooth",
-  "Sauces & Spreads",
-  "Chicken, Meat & Fish",
-  "Organic & Healthy Living",
-  "Baby Care",
-  "Pharma & Wellness",
-  "Cleaning Essentials",
-  "Home & Office",
-  "Personal Care",
-  "Pet Care",
-  "Paan Corner",
-  "SpeedyBistro",
+    "Daily Bread & Eggs",
+    "Fruits & Vegetables",
+    "Breakfast & Instant Food",
+    "Cold Drinks & Juices",
+    "Snacks & Munchies",
+    "Bakery & Biscuits",
+    "Tea, Coffee & Health Drink",
+    "Atta, Rice & Dal",
+    "Masala, Oil & More",
+    "Sweet Tooth",
+    "Sauces & Spreads",
+    "Chicken, Meat & Fish",
+    "Organic & Healthy Living",
+    "Baby Care",
+    "Pharma & Wellness",
+    "Cleaning Essentials",
+    "Home & Office",
+    "Personal Care",
+    "Pet Care",
+    "Paan Corner",
+    "Speedy Bistro",
 ];
 
 export function InventoryDashboard() {
@@ -63,7 +62,6 @@ export function InventoryDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
-  const [forecastingProduct, setForecastingProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
 
@@ -302,7 +300,6 @@ export function InventoryDashboard() {
                     onEdit={() => setEditingProduct(product)}
                     onDelete={() => setDeletingProduct(product)}
                     onUpdateStock={() => setUpdatingStockProduct(product)}
-                    onForecast={() => setForecastingProduct(product)}
                     hasWriteAccess={hasWriteAccess}
                   />
                 ))}
@@ -346,15 +343,6 @@ export function InventoryDashboard() {
         />
       )}
 
-      {forecastingProduct && (
-         <StockForecastingDialog
-          product={forecastingProduct}
-          open={!!forecastingProduct}
-          onOpenChange={(isOpen) => !isOpen && setForecastingProduct(null)}
-        />
-      )}
     </div>
   );
 }
-
-    

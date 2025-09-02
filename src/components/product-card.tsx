@@ -1,7 +1,7 @@
 
 "use client";
 
-import { MoreVertical, Edit, Trash2, TrendingUp, Package, AlertTriangle } from "lucide-react";
+import { MoreVertical, Edit, Trash2, Package, AlertTriangle } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,11 +17,10 @@ interface ProductCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onUpdateStock: () => void;
-  onForecast: () => void;
   hasWriteAccess: boolean;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForecast, hasWriteAccess }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWriteAccess }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
   
@@ -62,7 +61,6 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onForeca
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={onEdit}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
-                  <DropdownMenuItem onClick={onForecast}><TrendingUp className="mr-2 h-4 w-4" />Forecast</DropdownMenuItem>
                   <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
