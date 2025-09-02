@@ -1,5 +1,10 @@
-import { redirect } from 'next/navigation'
+import { InventoryDashboard } from "@/components/inventory-dashboard";
+import { ProtectedRoute } from "@/components/protected-route";
 
 export default function Home() {
-  redirect('/suppliers')
+  return (
+    <ProtectedRoute>
+      <InventoryDashboard />
+    </ProtectedRoute>
+  );
 }

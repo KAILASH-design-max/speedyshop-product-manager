@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Package, LogOut, Moon, Sun, Truck } from "lucide-react";
+import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
@@ -17,6 +17,7 @@ export function Header() {
   const pathname = usePathname()
 
   const navLinks = [
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/suppliers", label: "Suppliers", icon: Truck },
   ]
 
@@ -24,7 +25,7 @@ export function Header() {
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/suppliers" className="flex items-center">
+          <Link href="/" className="flex items-center">
             <Package className="h-6 w-6 text-primary" />
             <span className="ml-2 text-lg font-bold">Stock Watch</span>
           </Link>
