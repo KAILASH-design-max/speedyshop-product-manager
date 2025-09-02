@@ -27,6 +27,8 @@ export interface UserProfile {
   createdAt?: any;
   photoURL?: string;
   phoneNumber?: string;
+  jobTitle?: string;
+  department?: string;
 }
 
 export interface OrderItem {

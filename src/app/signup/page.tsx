@@ -24,6 +24,8 @@ const formSchema = z.object({
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   role: z.enum(["admin", "viewer", "inventory-manager"], { required_error: "Please select a role." }),
   phoneNumber: z.string().optional(),
+  jobTitle: z.string().optional(),
+  department: z.string().optional(),
 });
 
 type SignUpFormValues = z.infer<typeof formSchema>;
@@ -36,7 +38,7 @@ export default function SignUpPage() {
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", email: "", password: "", role: "inventory-manager", phoneNumber: "" },
+    defaultValues: { name: "", email: "", password: "", role: "inventory-manager", phoneNumber: "", jobTitle: "", department: "" },
   });
 
   const onSubmit = async (values: SignUpFormValues) => {
@@ -52,6 +54,8 @@ export default function SignUpPage() {
         email: values.email,
         role: values.role,
         phoneNumber: values.phoneNumber,
+        jobTitle: values.jobTitle,
+        department: values.department,
         photoURL: `https://avatar.vercel.sh/${values.name}.png` // Generate a default avatar
       });
 
@@ -146,6 +150,34 @@ export default function SignUpPage() {
                   </FormItem>
                 )}
               />
+               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="jobTitle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Job Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Manager" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="department"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Department</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Sales" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="role"
