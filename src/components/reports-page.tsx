@@ -2,14 +2,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BrainCircuit, Loader2 } from "lucide-react";
 import { Header } from "@/components/header";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import type { Order, Product } from "@/lib/types";
 import { getOrders, getProducts } from "@/lib/firestore";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 export function ReportsPage() {
   const { toast } = useToast();
@@ -52,13 +48,7 @@ export function ReportsPage() {
           <h1 className="text-3xl font-bold">Business Intelligence</h1>
         </div>
         
-        <Alert className="text-center">
-            <BrainCircuit className="h-4 w-4" />
-            <AlertTitle>Reporting Dashboard</AlertTitle>
-            <AlertDescription>
-                This is where your business intelligence reports will be displayed.
-            </AlertDescription>
-        </Alert>
+        {/* Reports content will go here */}
 
       </main>
     </div>
