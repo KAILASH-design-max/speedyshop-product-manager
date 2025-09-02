@@ -25,6 +25,8 @@ export interface UserProfile {
   email: string;
   role: 'admin' | 'viewer' | 'inventory-manager';
   createdAt?: any;
+  photoURL?: string;
+  phoneNumber?: string;
 }
 
 export interface OrderItem {

@@ -9,17 +9,38 @@ import { NotificationBell } from "./notification-bell";
 import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { useEffect, useState } from "react";
+import type { UserProfile } from "@/lib/types";
+import { getUserProfile } from "@/lib/firestore";
 
 
 export function Header() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (user) {
+        const profile = await getUserProfile(user.uid);
+        setUserProfile(profile);
+      }
+    }
+    fetchProfile();
+  }, [user]);
 
   const navLinks = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/suppliers", label: "Suppliers", icon: Truck },
   ]
+  
+  const getInitials = (name?: string | null) => {
+    if (!name) return 'U';
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
 
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -58,17 +79,31 @@ export function Header() {
            {user && (
             <>
               <NotificationBell />
-              <div className="hidden sm:flex items-center gap-2">
-                 <span className="text-sm text-muted-foreground">{user.email}</span>
-                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Logout">
-                  <LogOut className="h-5 w-5" />
-                </Button>
-              </div>
-               <div className="sm:hidden">
-                 <Button variant="ghost" size="icon" onClick={logout} aria-label="Logout">
-                  <LogOut className="h-5 w-5" />
-                </Button>
-              </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={userProfile?.photoURL ?? undefined} alt={userProfile?.name ?? "User"} />
+                        <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{userProfile?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {userProfile?.email}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
             </>
           )}
         </div>

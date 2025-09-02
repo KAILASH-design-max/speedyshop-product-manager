@@ -23,6 +23,7 @@ const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   role: z.enum(["admin", "viewer", "inventory-manager"], { required_error: "Please select a role." }),
+  phoneNumber: z.string().optional(),
 });
 
 type SignUpFormValues = z.infer<typeof formSchema>;
@@ -35,7 +36,7 @@ export default function SignUpPage() {
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", email: "", password: "", role: "inventory-manager" },
+    defaultValues: { name: "", email: "", password: "", role: "inventory-manager", phoneNumber: "" },
   });
 
   const onSubmit = async (values: SignUpFormValues) => {
@@ -50,6 +51,8 @@ export default function SignUpPage() {
         name: values.name,
         email: values.email,
         role: values.role,
+        phoneNumber: values.phoneNumber,
+        photoURL: `https://avatar.vercel.sh/${values.name}.png` // Generate a default avatar
       });
 
       router.push("/suppliers");
@@ -125,6 +128,19 @@ export default function SignUpPage() {
                           {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                         </button>
                       </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Phone Number (Optional)</FormLabel>
+                    <FormControl>
+                      <Input type="tel" placeholder="+1 234 567 890" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
