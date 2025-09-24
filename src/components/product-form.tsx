@@ -56,7 +56,7 @@ const categoryData = {
     "Sauces & Spreads": ["Tomato Ketchup","Mayonnaise","Peanut Butter","Jam & Honey","Chutneys & Dips","Cooking Sauces (Soy, Chili, Pasta Sauce)",],
     "Chicken, Meat & Fish": ["Fresh Chicken","Fresh Mutton","Fish & Seafood","Frozen Meat","Processed Meat (Sausages, Salami)","Eggs",],
     "Organic & Healthy Living": ["Organic Atta, Rice & Dal","Organic Fruits & Vegetables","Organic Snacks","Organic Oils & Spices","Superfoods (Seeds, Quinoa, Chia)",],
-    "Baby Care": ["Baby Food & Formula","Diapers & Wipes","Baby Skincare","Baby Health","Feeding Bottles & Accessories",],
+    "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare & Bath", "Baby Health & Wellness", "Feeding Bottles & Accessories", "Baby Clothing & Essentials", "Baby Bedding & Travel", "Baby Toys & Learning"],
     "Pharma & Wellness": ["OTC Medicines","Health Supplements","First Aid","Immunity Boosters","Masks & Sanitizers",],
     "Cleaning Essentials": ["Detergents & Fabric Care","Dishwashing Essentials","Surface Cleaners","Toilet Cleaners","Mops & Scrubs","Air Fresheners",],
     "Home & Office": ["Stationery","Kitchen Essentials","Storage & Containers","Tools & Hardware","Disposables & Party Supplies",],
