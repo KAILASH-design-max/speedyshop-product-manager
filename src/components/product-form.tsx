@@ -44,7 +44,7 @@ interface ProductFormProps {
 
 const categoryData = {
     "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)","Buns & Pav","Eggs","Butter & Margarine","Cheese & Paneer","Ghee",],
-    "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Herbs & Seasonings","Exotic Fruits & Veggies","Organic Fruits & Vegetables","Cut & Peeled (Ready-to-Cook)",],
+    "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Freshly Cut & Sprouts","Leafies & Herbs","Frozen Veg","Mangoes & Melons","Seasonal","Exotics",],
     "Breakfast & Instant Food": ["Breakfast Cereals","Instant Noodles & Pasta","Ready-to-Eat Meals","Poha & Upma Mix","Frozen Snacks","Microwave Meals",],
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Water","Fruit Juices","Energy & Sports Drinks","Flavored Water","Coconut Water",],
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
@@ -56,13 +56,13 @@ const categoryData = {
     "Sauces & Spreads": ["Tomato Ketchup","Mayonnaise","Peanut Butter","Jam & Honey","Chutneys & Dips","Cooking Sauces (Soy, Chili, Pasta Sauce)",],
     "Chicken, Meat & Fish": ["Fresh Chicken","Fresh Mutton","Fish & Seafood","Frozen Meat","Processed Meat (Sausages, Salami)","Eggs",],
     "Organic & Healthy Living": ["Organic Atta, Rice & Dal","Organic Fruits & Vegetables","Organic Snacks","Organic Oils & Spices","Superfoods (Seeds, Quinoa, Chia)",],
-    "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare & Bath", "Baby Health & Wellness", "Feeding Bottles & Accessories", "Baby Clothing & Essentials", "Baby Bedding & Travel", "Baby Toys & Learning"],
-    "Pharma & Wellness": ["Over-the-Counter Medicines", "Prescription Medicines", "Ayurveda & Herbal Care", "Vitamins & Supplements", "Personal Wellness", "Health Devices", "First Aid & Essentials", "Women’s Health", "Men’s Health", "Senior Citizen Care", "Baby & Kids Health", "Immunity & Preventive Care"],
-    "Cleaning Essentials": ["Surface Cleaners", "Toilet & Bathroom Cleaners", "Dishwashing Essentials", "Laundry Care", "Air Fresheners & Deodorizers", "Disinfectants & Sanitizers", "Cleaning Tools & Accessories", "Glass & Multi-purpose Cleaners", "Kitchen Cleaning Essentials", "Waste Disposal"],
-    "Home & Office": ["Stationery & Office Supplies", "Cleaning & Organizing", "Home Utility", "Kitchen & Dining Essentials", "Furniture & Furnishings", "Decor & Lighting", "Appliances & Electronics", "Home Safety & Tools", "Paper Products", "Packaging & Storage"],
-    "Personal Care": ["Skin Care", "Hair Care", "Oral Care", "Bath & Body", "Men’s Grooming", "Women’s Hygiene", "Baby Care", "Deodorants & Perfumes", "Hand Wash & Sanitizers", "Wellness & Grooming Tools"],
-    "Pet Care": ["Pet Food", "Pet Grooming", "Pet Health & Wellness", "Pet Accessories", "Pet Hygiene", "Pet Training Essentials", "Aquatic & Small Pets"],
-    "Paan Corner": ["Paan Varieties", "Mouth Fresheners", "Supari & Areca Nut", "Tobacco-Free Products", "Sweeteners & Add-ons", "Betel Leaves", "Flavored Candies & Digestives"],
+    "Baby Care": ["Baby Food & Formula","Diapers & Wipes","Baby Skincare & Bath","Baby Health & Wellness","Feeding Bottles & Accessories","Baby Clothing & Essentials","Baby Bedding & Travel","Baby Toys & Learning"],
+    "Pharma & Wellness": ["Over-the-Counter Medicines","Prescription Medicines","Ayurveda & Herbal Care","Vitamins & Supplements","Personal Wellness","Health Devices","First Aid & Essentials","Women’s Health","Men’s Health","Senior Citizen Care","Baby & Kids Health","Immunity & Preventive Care"],
+    "Cleaning Essentials": ["Surface Cleaners","Toilet & Bathroom Cleaners","Dishwashing Essentials","Laundry Care","Air Fresheners & Deodorizers","Disinfectants & Sanitizers","Cleaning Tools & Accessories","Glass & Multi-purpose Cleaners","Kitchen Cleaning Essentials","Waste Disposal"],
+    "Home & Office": ["Stationery & Office Supplies","Cleaning & Organizing","Home Utility","Kitchen & Dining Essentials","Furniture & Furnishings","Decor & Lighting","Appliances & Electronics","Home Safety & Tools","Paper Products","Packaging & Storage"],
+    "Personal Care": ["Skin Care","Hair Care","Oral Care","Bath & Body","Men’s Grooming","Women’s Hygiene","Baby Care","Deodorants & Perfumes","Hand Wash & Sanitizers","Wellness & Grooming Tools"],
+    "Pet Care": ["Pet Food","Pet Grooming","Pet Health & Wellness","Pet Accessories","Pet Hygiene","Pet Training Essentials","Aquatic & Small Pets"],
+    "Paan Corner": ["Paan Varieties","Mouth Fresheners","Supari & Areca Nut","Tobacco-Free Products","Sweeteners & Add-ons","Betel Leaves","Flavored Candies & Digestives"],
     "Speedy Bistro": ["Burgers & Sandwiches","Pizzas","Rolls & Wraps","Momos & Dumplings","Pasta","Desserts & Beverages",],
 };
 
@@ -383,5 +383,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     
 
     
+
 
 
