@@ -61,7 +61,7 @@ const categoryData = {
     "Cleaning Essentials": ["Surface Cleaners", "Toilet & Bathroom Cleaners", "Dishwashing Essentials", "Laundry Care", "Air Fresheners & Deodorizers", "Disinfectants & Sanitizers", "Cleaning Tools & Accessories", "Glass & Multi-purpose Cleaners", "Kitchen Cleaning Essentials", "Waste Disposal"],
     "Home & Office": ["Stationery & Office Supplies", "Cleaning & Organizing", "Home Utility", "Kitchen & Dining Essentials", "Furniture & Furnishings", "Decor & Lighting", "Appliances & Electronics", "Home Safety & Tools", "Paper Products", "Packaging & Storage"],
     "Personal Care": ["Skin Care", "Hair Care", "Oral Care", "Bath & Body", "Men’s Grooming", "Women’s Hygiene", "Baby Care", "Deodorants & Perfumes", "Hand Wash & Sanitizers", "Wellness & Grooming Tools"],
-    "Pet Care": ["Dog Food","Cat Food","Pet Treats","Pet Grooming","Pet Accessories","Pet Health",],
+    "Pet Care": ["Pet Food", "Pet Grooming", "Pet Health & Wellness", "Pet Accessories", "Pet Hygiene", "Pet Training Essentials", "Aquatic & Small Pets"],
     "Paan Corner": ["Paan Ingredients","Mouth Fresheners","Supari & Mukhwas","Flavored Tobacco (If legal)",],
     "Speedy Bistro": ["Burgers & Sandwiches","Pizzas","Rolls & Wraps","Momos & Dumplings","Pasta","Desserts & Beverages",],
 };
@@ -383,3 +383,4 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     
 
     
+
