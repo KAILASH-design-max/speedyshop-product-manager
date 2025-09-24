@@ -58,7 +58,7 @@ const categoryData = {
     "Organic & Healthy Living": ["Organic Atta, Rice & Dal","Organic Fruits & Vegetables","Organic Snacks","Organic Oils & Spices","Superfoods (Seeds, Quinoa, Chia)",],
     "Baby Care": ["Baby Food & Formula", "Diapers & Wipes", "Baby Skincare & Bath", "Baby Health & Wellness", "Feeding Bottles & Accessories", "Baby Clothing & Essentials", "Baby Bedding & Travel", "Baby Toys & Learning"],
     "Pharma & Wellness": ["Over-the-Counter Medicines", "Prescription Medicines", "Ayurveda & Herbal Care", "Vitamins & Supplements", "Personal Wellness", "Health Devices", "First Aid & Essentials", "Women’s Health", "Men’s Health", "Senior Citizen Care", "Baby & Kids Health", "Immunity & Preventive Care"],
-    "Cleaning Essentials": ["D detergents & Fabric Care","Dishwashing Essentials","Surface Cleaners","Toilet Cleaners","Mops & Scrubs","Air Fresheners",],
+    "Cleaning Essentials": ["Surface Cleaners", "Toilet & Bathroom Cleaners", "Dishwashing Essentials", "Laundry Care", "Air Fresheners & Deodorizers", "Disinfectants & Sanitizers", "Cleaning Tools & Accessories", "Glass & Multi-purpose Cleaners", "Kitchen Cleaning Essentials", "Waste Disposal"],
     "Home & Office": ["Stationery","Kitchen Essentials","Storage & Containers","Tools & Hardware","Disposables & Party Supplies",],
     "Personal Care": ["Hair Care","Skin Care","Bath & Body","Oral Care","Shaving & Grooming","Feminine Hygiene",],
     "Pet Care": ["Dog Food","Cat Food","Pet Treats","Pet Grooming","Pet Accessories","Pet Health",],
