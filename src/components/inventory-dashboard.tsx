@@ -31,7 +31,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 
 
 const productCategories = [
-    "Daily Bread & Eggs",
+    "Dairy, Bread & Eggs",
     "Fruits & Vegetables",
     "Breakfast & Instant Food",
     "Cold Drinks & Juices",
