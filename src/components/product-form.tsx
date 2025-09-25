@@ -45,11 +45,10 @@ interface ProductFormProps {
 const categoryData = {
     "Dairy, Bread & Eggs": ["Milk & Toned Milk","Curd & Yogurt","Paneer & Tofu","Cheese & Butter","Bread & Buns","Cakes & Bakery Snacks","Eggs & Egg Products","Ghee & Cream","Milkshakes & Flavored Milk","Lassi & Buttermilk","Frozen Desserts & Ice Creams","Dairy Beverages",],
     "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Freshly Cut & Sprouts","Leafies & Herbs","Frozen Veg","Mangoes & Melons","Seasonal","Exotics",],
-    "Breakfast & Instant Food": ["Breakfast Cereals","Instant Noodles & Pasta","Ready-to-Eat Meals","Poha & Upma Mix","Frozen Snacks","Microwave Meals",],
+    "Breakfast & Instant Food": ["Instant Noodles & Pasta","Ready-to-Eat Meals","Breakfast Cereals & Oats","Poha, Upma & Vermicelli","Bread Spreads & Jams","Peanut Butter & Nut Spreads","Soup Mixes & Instant Soups","Energy & Protein Bars","Instant Mixes (Idli, Dosa, Pancake, Halwa)","Granola & Muesli","Tea, Coffee & Beverages","Health Drinks & Mixes",],
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Water","Fruit Juices","Energy & Sports Drinks","Flavored Water","Coconut Water",],
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
     "Bakery & Biscuits": ["Bread & Buns","Cakes & Muffins","Cookies & Biscuits","Rusk & Toast","Croissants & Pastries",],
-    "Tea, Coffee & Health Drink": ["Tea (Regular & Green)","Coffee (Instant & Ground)","Health Drinks (Bournvita, Horlicks)","Malt Drinks & Hot Chocolate","Herbal & Detox Drinks",],
     "Atta, Rice & Dal": ["Wheat Flour & Atta","Basmati Rice","Non-Basmati Rice","Pulses & Lentils","Sooji & Besan","Poha & Flattened Rice",],
     "Masala, Oil & More": ["Spices & Masalas","Edible Oils & Ghee","Salt & Sugar","Hing & Asafoetida","Pickles & Papad","Baking Essentials",],
     "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
@@ -387,6 +386,9 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
 
 
+
+
+    
 
 
     
