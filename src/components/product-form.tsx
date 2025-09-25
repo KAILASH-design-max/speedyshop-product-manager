@@ -45,7 +45,7 @@ interface ProductFormProps {
 const categoryData = {
     "Dairy, Bread & Eggs": ["Milk & Toned Milk","Curd & Yogurt","Paneer & Tofu","Cheese & Butter","Bread & Buns","Cakes & Bakery Snacks","Eggs & Egg Products","Ghee & Cream","Milkshakes & Flavored Milk","Lassi & Buttermilk","Frozen Desserts & Ice Creams","Dairy Beverages",],
     "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Freshly Cut & Sprouts","Leafies & Herbs","Frozen Veg","Mangoes & Melons","Seasonal","Exotics",],
-    "Breakfast & Instant Food": ["Instant Noodles & Pasta","Ready-to-Eat Meals","Breakfast Cereals & Oats","Poha, Upma & Vermicelli","Bread Spreads & Jams","Peanut Butter & Nut Spreads","Soup Mixes & Instant Soups","Energy & Protein Bars","Instant Mixes (Idli, Dosa, Pancake, Halwa)","Granola & Muesli","Tea, Coffee & Beverages","Health Drinks & Mixes",],
+    "Breakfast & Instant Food": ["Instant Noodles & Pasta","Ready-to-Eat Meals","Breakfast Cereals & Oats","Poha, Upma & Vermicelli","Bread Spreads & Jams","Peanut Butter & Nut Spreads","Soup Mixes & Instant Soups","Energy & Protein Bars","Instant Mixes","Granola & Muesli","Tea, Coffee & Beverages","Health Drinks & Mixes",],
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Drinking Water","Flavored Water & Soda","Fruit Juices","Energy Drinks","Sports & Electrolyte Drinks","Iced Tea & Cold Coffee","Mocktails & Mixers","Concentrates & Syrups","Health & Wellness Drinks","Kids’ Drinks",],
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
     "Bakery & Biscuits": ["Bread & Buns", "Cookies & Biscuits", "Cakes & Pastries", "Rusk & Toasts", "Savory Bakery Snacks", "Muffins & Cupcakes", "Premium & Designer Cakes", "Gluten-Free Bakery", "Breakfast Bakery Items", "Frozen Bakery Products", "Specialty Flavored Biscuits"],
@@ -394,4 +394,5 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
     
 
+    
     
