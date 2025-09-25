@@ -43,7 +43,7 @@ interface ProductFormProps {
 }
 
 const categoryData = {
-    "Daily Bread & Eggs": ["Bread (White, Brown, Multigrain)","Buns & Pav","Eggs","Butter & Margarine","Cheese & Paneer","Ghee",],
+    "Daily Bread & Eggs": ["Fresh Bread", "Milk", "Buns & Pavs", "Cakes & Pastries", "Cookies & Biscuits", "Eggs", "Packaged Loaves", "Croissants & Donuts", "Rusks & Toasts", "Wraps & Tortillas", "Specialty Bread", "Dough & Batter", "Bakery Snacks"],
     "Fruits & Vegetables": ["Fresh Fruits","Fresh Vegetables","Freshly Cut & Sprouts","Leafies & Herbs","Frozen Veg","Mangoes & Melons","Seasonal","Exotics",],
     "Breakfast & Instant Food": ["Breakfast Cereals","Instant Noodles & Pasta","Ready-to-Eat Meals","Poha & Upma Mix","Frozen Snacks","Microwave Meals",],
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Water","Fruit Juices","Energy & Sports Drinks","Flavored Water","Coconut Water",],
@@ -387,3 +387,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
 
 
+
+
+    
