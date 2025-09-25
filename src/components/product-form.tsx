@@ -48,7 +48,7 @@ const categoryData = {
     "Breakfast & Instant Food": ["Instant Noodles & Pasta","Ready-to-Eat Meals","Breakfast Cereals & Oats","Poha, Upma & Vermicelli","Bread Spreads & Jams","Peanut Butter & Nut Spreads","Soup Mixes & Instant Soups","Energy & Protein Bars","Instant Mixes (Idli, Dosa, Pancake, Halwa)","Granola & Muesli","Tea, Coffee & Beverages","Health Drinks & Mixes",],
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Drinking Water","Flavored Water & Soda","Fruit Juices","Energy Drinks","Sports & Electrolyte Drinks","Iced Tea & Cold Coffee","Mocktails & Mixers","Concentrates & Syrups","Health & Wellness Drinks","Kids’ Drinks",],
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
-    "Bakery & Biscuits": ["Bread & Buns","Cakes & Muffins","Cookies & Biscuits","Rusk & Toast","Croissants & Pastries",],
+    "Bakery & Biscuits": ["Bread & Buns", "Cookies & Biscuits", "Cakes & Pastries", "Rusk & Toasts", "Savory Bakery Snacks", "Muffins & Cupcakes", "Premium & Designer Cakes", "Gluten-Free Bakery", "Breakfast Bakery Items", "Frozen Bakery Products", "Specialty Flavored Biscuits"],
     "Atta, Rice & Dal": ["Wheat Flour & Atta","Basmati Rice","Non-Basmati Rice","Pulses & Lentils","Sooji & Besan","Poha & Flattened Rice",],
     "Masala, Oil & More": ["Spices & Masalas","Edible Oils & Ghee","Salt & Sugar","Hing & Asafoetida","Pickles & Papad","Baking Essentials",],
     "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
