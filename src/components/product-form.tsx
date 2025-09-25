@@ -50,7 +50,7 @@ const categoryData = {
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
     "Bakery & Biscuits": ["Bread & Buns", "Cookies & Biscuits", "Cakes & Pastries", "Rusk & Toasts", "Savory Bakery Snacks", "Muffins & Cupcakes", "Premium & Designer Cakes", "Gluten-Free Bakery", "Breakfast Bakery Items", "Frozen Bakery Products", "Specialty Flavored Biscuits"],
     "Tea, Coffee & Health Drink": ["Black Tea & Green Tea","Herbal & Flavored Tea","Instant Tea & Tea Bags","Coffee Powder & Beans","Instant Coffee & Coffee Mixes","Decaffeinated Coffee","Energy & Health Drinks","Protein & Nutritional Drinks","Milk-Based Beverages","Ready-to-Drink Tea & Coffee","Tea & Coffee Accessories","Herbal & Wellness Tonics"],
-    "Atta, Rice & Dal": ["Wheat Flour & Atta","Basmati Rice","Non-Basmati Rice","Pulses & Lentils","Sooji & Besan","Poha & Flattened Rice",],
+    "Atta, Rice & Dal": ["Wheat Flour / Atta","Rice","Pulses / Dal","Specialty Flours","Organic Grains & Pulses","Rice Mixes & Ready-to-Cook","Lentil & Bean Mixes","Gluten-Free Flours","Sooji / Semolina / Rava","Flour & Rice Combos","Packaged Dal & Lentils","Flour & Rice Accessories",],
     "Masala, Oil & More": ["Spices & Masalas","Edible Oils & Ghee","Salt & Sugar","Hing & Asafoetida","Pickles & Papad","Baking Essentials",],
     "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
     "Sauces & Spreads": ["Tomato Ketchup","Mayonnaise","Peanut Butter","Jam & Honey","Chutneys & Dips","Cooking Sauces (Soy, Chili, Pasta Sauce)",],
@@ -395,4 +395,6 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     
 
     
+    
+
     
