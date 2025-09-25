@@ -52,7 +52,7 @@ const categoryData = {
     "Tea, Coffee & Health Drink": ["Black Tea & Green Tea","Herbal & Flavored Tea","Instant Tea & Tea Bags","Coffee Powder & Beans","Instant Coffee & Coffee Mixes","Decaffeinated Coffee","Energy & Health Drinks","Protein & Nutritional Drinks","Milk-Based Beverages","Ready-to-Drink Tea & Coffee","Tea & Coffee Accessories","Herbal & Wellness Tonics"],
     "Atta, Rice & Dal": ["Wheat Flour / Atta","Rice","Pulses / Dal","Specialty Flours","Organic Grains & Pulses","Rice Mixes & Ready-to-Cook","Lentil & Bean Mixes","Gluten-Free Flours","Sooji / Semolina / Rava","Flour & Rice Combos","Packaged Dal & Lentils","Flour & Rice Accessories",],
     "Masala, Oil & More": ["Cooking Oils","Whole Spices","Powdered Spices / Masala","Herbs & Seasonings","Ready-to-Use Masala Mixes","Salt & Sugar","Vinegar & Sauces","Pickles & Chutneys","Condiments & Dressings","Cooking Pastes & Marinades","Specialty Oils & Exotic Spices",],
-    "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
+    "Sweet Tooth": ["Chocolates & Bars","Candies & Toffees","Gummies & Jellies","Bakery Sweets","Sugar-Free Sweets","Dry Fruit Sweets","Instant Dessert Mixes","Chocolate & Nut Spreads","Frozen Desserts & Ice Creams","Sweet Snacks",],
     "Sauces & Spreads": ["Tomato Ketchup","Mayonnaise","Peanut Butter","Jam & Honey","Chutneys & Dips","Cooking Sauces (Soy, Chili, Pasta Sauce)",],
     "Chicken, Meat & Fish": ["Fresh Chicken","Fresh Mutton","Fish & Seafood","Frozen Meat","Processed Meat (Sausages, Salami)","Eggs",],
     "Organic & Healthy Living": ["Organic Atta, Rice & Dal","Organic Fruits & Vegetables","Organic Snacks","Organic Oils & Spices","Superfoods (Seeds, Quinoa, Chia)",],
@@ -395,6 +395,8 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     
 
     
+    
+
     
 
     
