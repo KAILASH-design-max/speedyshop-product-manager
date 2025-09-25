@@ -27,6 +27,7 @@ import { bulkAddProducts } from "@/app/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { useDebounce } from "@/hooks/use-debounce";
 
 
 const productCategories = [
@@ -64,6 +65,7 @@ export function InventoryDashboard() {
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 
   const hasWriteAccess = userProfile?.role === 'admin' || userProfile?.role === 'inventory-manager';
@@ -225,7 +227,7 @@ export function InventoryDashboard() {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -308,7 +310,7 @@ export function InventoryDashboard() {
             {!loading && filteredProducts.length === 0 && (
                 <div className="text-center col-span-full py-12 text-muted-foreground">
                     <p>No products found.</p>
-                    {searchTerm && <p>Try adjusting your search or filters.</p>}
+                    {debouncedSearchTerm && <p>Try adjusting your search or filters.</p>}
                 </div>
             )}
           </div>
