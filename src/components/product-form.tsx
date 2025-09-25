@@ -49,6 +49,7 @@ const categoryData = {
     "Cold Drinks & Juices": ["Soft Drinks","Packaged Drinking Water","Flavored Water & Soda","Fruit Juices","Energy Drinks","Sports & Electrolyte Drinks","Iced Tea & Cold Coffee","Mocktails & Mixers","Concentrates & Syrups","Health & Wellness Drinks","Kids’ Drinks",],
     "Snacks & Munchies": ["Chips & Crisps","Namkeen & Mixtures","Popcorn","Roasted Snacks","Dry Fruits & Nuts","Healthy Snacks & Energy Bars",],
     "Bakery & Biscuits": ["Bread & Buns", "Cookies & Biscuits", "Cakes & Pastries", "Rusk & Toasts", "Savory Bakery Snacks", "Muffins & Cupcakes", "Premium & Designer Cakes", "Gluten-Free Bakery", "Breakfast Bakery Items", "Frozen Bakery Products", "Specialty Flavored Biscuits"],
+    "Tea, Coffee & Health Drink": ["Black Tea & Green Tea","Herbal & Flavored Tea","Instant Tea & Tea Bags","Coffee Powder & Beans","Instant Coffee & Coffee Mixes","Decaffeinated Coffee","Energy & Health Drinks","Protein & Nutritional Drinks","Milk-Based Beverages","Ready-to-Drink Tea & Coffee","Tea & Coffee Accessories","Herbal & Wellness Tonics"],
     "Atta, Rice & Dal": ["Wheat Flour & Atta","Basmati Rice","Non-Basmati Rice","Pulses & Lentils","Sooji & Besan","Poha & Flattened Rice",],
     "Masala, Oil & More": ["Spices & Masalas","Edible Oils & Ghee","Salt & Sugar","Hing & Asafoetida","Pickles & Papad","Baking Essentials",],
     "Sweet Tooth": ["Chocolates","Indian Sweets (Mithai)","Candy & Lollipops","Toffees","Dessert Mixes","Ice Creams & Frozen Desserts",],
@@ -169,7 +170,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
         </div>
         
         <div className="flex items-center justify-between">
-            <FormLabel>Category & Subcategory</FormLabel>
+            <FormLabel>Category &amp; Subcategory</FormLabel>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <FormField
@@ -390,5 +391,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
 
     
 
+
+    
 
     
