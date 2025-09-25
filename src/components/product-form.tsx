@@ -60,7 +60,7 @@ const categoryData = {
     "Pharma & Wellness": ["Over-the-Counter Medicines","Prescription Medicines","Ayurveda & Herbal Care","Vitamins & Supplements","Personal Wellness","Health Devices","First Aid & Essentials","Women’s Health","Men’s Health","Senior Citizen Care","Baby & Kids Health","Immunity & Preventive Care"],
     "Cleaning Essentials": ["Surface Cleaners","Toilet & Bathroom Cleaners","Dishwashing Essentials","Laundry Care","Air Fresheners & Deodorizers","Disinfectants & Sanitizers","Cleaning Tools & Accessories","Glass & Multi-purpose Cleaners","Kitchen Cleaning Essentials","Waste Disposal"],
     "Home & Office": ["Stationery & Office Supplies","Cleaning & Organizing","Home Utility","Kitchen & Dining Essentials","Furniture & Furnishings","Decor & Lighting","Appliances & Electronics","Home Safety & Tools","Paper Products","Packaging & Storage"],
-    "Personal Care": ["Skin Care","Hair Care","Oral Care","Bath & Body","Men’s Grooming","Women’s Hygiene","Baby Care","Deodorants & Perfumes","Hand Wash & Sanitizers","Wellness & Grooming Tools"],
+    "Personal Care": ["Skin Care","Hair Care","Oral Care","Bath & Body","Men’s Grooming","Women’s Hygiene","Deodorants & Perfumes","Hand Wash & Sanitizers","Wellness & Grooming Tools"],
     "Pet Care": ["Pet Food","Pet Grooming","Pet Health & Wellness","Pet Accessories","Pet Hygiene","Pet Training Essentials","Aquatic & Small Pets"],
     "Paan Corner": ["Paan Varieties","Mouth Fresheners","Supari & Areca Nut","Tobacco-Free Products","Sweeteners & Add-ons","Betel Leaves","Flavored Candies & Digestives"],
     "Speedy Bistro": ["Burgers & Sandwiches","Pizzas","Rolls & Wraps","Momos & Dumplings","Pasta","Desserts & Beverages",],
@@ -383,6 +383,7 @@ export function ProductForm({ onSubmit, defaultValues, buttonText }: ProductForm
     
 
     
+
 
 
 
