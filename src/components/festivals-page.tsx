@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,6 +17,7 @@ import { EditFestivalDialog } from "./edit-festival-dialog";
 import { DeleteFestivalAlert } from "./delete-festival-alert";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
+import { Skeleton } from "./ui/skeleton";
 
 export function FestivalsPage() {
   const { user } = useAuth();
@@ -141,16 +143,23 @@ export function FestivalsPage() {
       <main className="flex-1 p-4 md:p-8 container mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Festival Campaigns</h1>
-          {hasWriteAccess && (
+          {loading ? (
+            <Skeleton className="h-10 w-40" />
+           ) : hasWriteAccess ? (
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <PlusCircle className="mr-2 h-4 w-4" />
               Create Festival
             </Button>
-          )}
+          ) : null}
         </div>
 
         {loading ? (
-          <p>Loading campaigns...</p>
+          <div className="border rounded-lg p-4">
+            <Skeleton className="h-10 w-full mb-4" />
+            <Skeleton className="h-10 w-full mb-2" />
+            <Skeleton className="h-10 w-full mb-2" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         ) : (
           <div className="border rounded-lg">
             <Table>
