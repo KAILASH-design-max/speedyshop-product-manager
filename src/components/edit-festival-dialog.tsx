@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -11,6 +12,16 @@ interface EditFestivalDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
+
+// Helper to convert Firestore Timestamp or other date formats to a Date object
+const toDate = (date: any): Date | undefined => {
+  if (!date) return undefined;
+  if (date instanceof Date) return date;
+  if (date.toDate && typeof date.toDate === 'function') return date.toDate(); // Firestore Timestamp
+  if (typeof date === 'string' || typeof date === 'number') return new Date(date);
+  return undefined;
+}
+
 
 export function EditFestivalDialog({ festival, onUpdateFestival, open, onOpenChange }: EditFestivalDialogProps) {
 
@@ -28,8 +39,8 @@ export function EditFestivalDialog({ festival, onUpdateFestival, open, onOpenCha
   const defaultValues = {
     ...festival,
     dateRange: {
-      from: festival.startDate?.toDate(),
-      to: festival.endDate?.toDate(),
+      from: toDate(festival.startDate),
+      to: toDate(festival.endDate),
     }
   }
 

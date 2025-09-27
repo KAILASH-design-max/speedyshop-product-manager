@@ -18,6 +18,16 @@ import { DeleteFestivalAlert } from "./delete-festival-alert";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
 import { Skeleton } from "./ui/skeleton";
+import type { Timestamp } from "firebase/firestore";
+
+// Helper to convert Firestore Timestamp or other date formats to a Date object
+const toDate = (date: any): Date | null => {
+  if (!date) return null;
+  if (date instanceof Date) return date;
+  if (date.toDate && typeof date.toDate === 'function') return date.toDate(); // Firestore Timestamp
+  if (typeof date === 'string' || typeof date === 'number') return new Date(date);
+  return null;
+}
 
 export function FestivalsPage() {
   const { user } = useAuth();
@@ -127,8 +137,8 @@ export function FestivalsPage() {
 
   const getStatus = (festival: Festival) => {
     const now = new Date();
-    const startDate = festival.startDate?.toDate();
-    const endDate = festival.endDate?.toDate();
+    const startDate = toDate(festival.startDate);
+    const endDate = toDate(festival.endDate);
 
     if (!startDate || !endDate) return <Badge variant="secondary">Unscheduled</Badge>;
 
@@ -174,47 +184,51 @@ export function FestivalsPage() {
               </TableHeader>
               <TableBody>
                 {festivals.length > 0 ? (
-                  festivals.map((festival) => (
-                    <TableRow key={festival.id}>
-                      <TableCell className="font-medium">{festival.title}</TableCell>
-                      <TableCell>
-                        {festival.startDate?.toDate() && festival.endDate?.toDate() ? (
-                          `${format(festival.startDate.toDate(), "MMM d, yyyy")} - ${format(festival.endDate.toDate(), "MMM d, yyyy")}`
-                        ) : ('-')}
-                      </TableCell>
-                      <TableCell>{getStatus(festival)}</TableCell>
-                      <TableCell>
-                        <Switch
-                            checked={festival.isActive}
-                            onCheckedChange={() => handleToggleActive(festival)}
-                            disabled={!hasWriteAccess}
-                            aria-label="Toggle campaign activation"
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {hasWriteAccess && (
-                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => setEditingFestival(festival)}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-destructive" onClick={() => setDeletingFestival(festival)}>
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))
+                  festivals.map((festival) => {
+                    const startDate = toDate(festival.startDate);
+                    const endDate = toDate(festival.endDate);
+                    return (
+                      <TableRow key={festival.id}>
+                        <TableCell className="font-medium">{festival.title}</TableCell>
+                        <TableCell>
+                          {startDate && endDate ? (
+                            `${format(startDate, "MMM d, yyyy")} - ${format(endDate, "MMM d, yyyy")}`
+                          ) : ('-')}
+                        </TableCell>
+                        <TableCell>{getStatus(festival)}</TableCell>
+                        <TableCell>
+                          <Switch
+                              checked={festival.isActive}
+                              onCheckedChange={() => handleToggleActive(festival)}
+                              disabled={!hasWriteAccess}
+                              aria-label="Toggle campaign activation"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {hasWriteAccess && (
+                             <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <span className="sr-only">Open menu</span>
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => setEditingFestival(festival)}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  <span>Edit</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive" onClick={() => setDeletingFestival(festival)}>
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  <span>Delete</span>
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
@@ -237,7 +251,7 @@ export function FestivalsPage() {
           festival={editingFestival}
           onUpdateFestival={handleUpdateFestival}
           open={!!editingFestival}
-          onOpenChange={(isOpen) => !isOpen && setEditingFestival(null)}
+          onOpencha nge={(isOpen) => !isOpen && setEditingFestival(null)}
         />
       )}
       {deletingFestival && (
