@@ -251,7 +251,7 @@ export function FestivalsPage() {
           festival={editingFestival}
           onUpdateFestival={handleUpdateFestival}
           open={!!editingFestival}
-          onOpencha nge={(isOpen) => !isOpen && setEditingFestival(null)}
+          onOpenChange={(isOpen) => !isOpen && setEditingFestival(null)}
         />
       )}
       {deletingFestival && (
