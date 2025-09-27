@@ -97,8 +97,6 @@ export interface Supplier {
 export interface Festival {
   id: string;
   title: string;
-  description?: string;
-  bannerImage?: string;
   startDate: any; // Firebase Timestamp
   endDate: any; // Firebase Timestamp
   productIds: string[];

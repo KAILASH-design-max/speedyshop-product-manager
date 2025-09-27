@@ -3,16 +3,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarIcon, Search, X, Image as ImageIcon } from "lucide-react";
+import { CalendarIcon, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import type { Product, Festival } from "@/lib/types";
-import { Textarea } from "./ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -25,8 +23,6 @@ import { Badge } from "./ui/badge";
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "Festival title must be at least 2 characters." }),
-  description: z.string().optional(),
-  bannerImage: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
   dateRange: z.object({
     from: z.date({ required_error: "Start date is required." }),
     to: z.date({ required_error: "End date is required." }),
@@ -54,8 +50,6 @@ export function FestivalForm({ onSubmit, defaultValues, buttonText }: FestivalFo
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: defaultValues?.title ?? "",
-      description: defaultValues?.description ?? "",
-      bannerImage: defaultValues?.bannerImage ?? "",
       dateRange: { from: defaultValues?.dateRange?.from, to: defaultValues?.dateRange?.to },
       productIds: defaultValues?.productIds ?? [],
       urlSlug: defaultValues?.urlSlug ?? "",
@@ -63,7 +57,6 @@ export function FestivalForm({ onSubmit, defaultValues, buttonText }: FestivalFo
     },
   });
 
-  const bannerImage = form.watch("bannerImage");
   const selectedProductIds = form.watch("productIds") || [];
   const selectedProducts = allProducts.filter(p => selectedProductIds.includes(p.id));
 
@@ -112,44 +105,6 @@ export function FestivalForm({ onSubmit, defaultValues, buttonText }: FestivalFo
               <FormControl>
                 <Input placeholder="e.g., Diwali Dhamaka!" {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Describe the festival promotion..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="bannerImage"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Banner Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/banner.png" {...field} />
-              </FormControl>
-               <div className="w-full mt-2 aspect-video relative bg-muted rounded-md flex items-center justify-center overflow-hidden">
-                {bannerImage && (form.getFieldState('bannerImage').error === undefined) ? (
-                  <Image src={bannerImage} alt="Banner preview" fill className="object-cover" />
-                ) : (
-                  <div className="text-muted-foreground text-sm flex flex-col items-center">
-                    <ImageIcon className="h-8 w-8 mb-2" />
-                    <p>Banner preview</p>
-                  </div>
-                )}
-              </div>
               <FormMessage />
             </FormItem>
           )}
