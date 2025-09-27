@@ -39,8 +39,8 @@ export function EditFestivalDialog({ festival, onUpdateFestival, open, onOpenCha
   const defaultValues = {
     ...festival,
     dateRange: {
-      from: toDate(festival.startDate),
-      to: toDate(festival.endDate),
+      from: toDate(festival.startDate) || new Date(),
+      to: toDate(festival.endDate) || new Date(new Date().setDate(new Date().getDate() + 7)),
     }
   }
 
