@@ -256,7 +256,7 @@ export async function deleteSupplier(supplierId: string): Promise<void> {
 
 // FESTIVALS
 export async function getFestivals(): Promise<Festival[]> {
-  const q = query(festivalsCollection, orderBy("startDate", "desc"));
+  const q = query(festivalsCollection, orderBy("isActive", "desc"), orderBy("startDate", "desc"));
   const querySnapshot = await getDocs(q);
   const festivals: Festival[] = [];
   querySnapshot.forEach((doc) => {
