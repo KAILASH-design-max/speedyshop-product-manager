@@ -20,7 +20,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order, Notification, Supplier } from "./types";
+import type { Product, UserProfile, Order, Notification, Supplier, Festival } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
@@ -28,6 +28,7 @@ const usersCollection = collection(db, "users");
 const ordersCollection = collection(db, "orders");
 const notificationsCollection = collection(db, "notifications");
 const suppliersCollection = collection(db, "suppliers");
+const festivalsCollection = collection(db, "festivals");
 
 
 // GET all products
@@ -251,4 +252,37 @@ export async function updateSupplier(supplierId: string, updates: Partial<Omit<S
 export async function deleteSupplier(supplierId: string): Promise<void> {
   const supplierDoc = doc(db, "suppliers", supplierId);
   await deleteDoc(supplierDoc);
+}
+
+// FESTIVALS
+export async function getFestivals(): Promise<Festival[]> {
+  const q = query(festivalsCollection, orderBy("startDate", "desc"));
+  const querySnapshot = await getDocs(q);
+  const festivals: Festival[] = [];
+  querySnapshot.forEach((doc) => {
+    festivals.push({ id: doc.id, ...doc.data() } as Festival);
+  });
+  return festivals;
+}
+
+export async function addFestival(festivalData: Omit<Festival, "id">): Promise<Festival> {
+  const docRef = await addDoc(festivalsCollection, {
+    ...festivalData,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return { ...festivalData, id: docRef.id };
+}
+
+export async function updateFestival(festivalId: string, updates: Partial<Omit<Festival, "id">>): Promise<void> {
+  const festivalDoc = doc(db, "festivals", festivalId);
+  await updateDoc(festivalDoc, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteFestival(festivalId: string): Promise<void> {
+  const festivalDoc = doc(db, "festivals", festivalId);
+  await deleteDoc(festivalDoc);
 }
