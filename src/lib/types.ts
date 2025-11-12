@@ -74,16 +74,6 @@ export interface Order {
   updatedAt?: any; // Firebase Timestamp
 }
 
-export interface Notification {
-  id: string;
-  title: string;
-  description: string;
-  type: 'low-stock' | 'new-order' | 'info';
-  isRead: boolean;
-  createdAt: any; // Firebase Timestamp
-  link?: string;
-}
-
 export interface Supplier {
   id: string;
   name: string;

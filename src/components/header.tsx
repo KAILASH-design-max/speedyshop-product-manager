@@ -5,7 +5,6 @@ import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, C
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
-import { NotificationBell } from "./notification-bell";
 import Link from "next/link";
 import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils";
@@ -86,7 +85,6 @@ export function Header() {
           </Button>
            {user && (
             <>
-              <NotificationBell />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
