@@ -1,3 +1,4 @@
+
 import { UserProfilePage } from "@/components/user-profile-page";
 import { ProtectedRoute } from "@/components/protected-route";
 
