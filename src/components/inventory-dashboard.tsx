@@ -2,7 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PlusCircle, Upload, Search, Printer } from "lucide-react";
+import { PlusCircle, Upload, Search, Printer, FileDown } from "lucide-react";
+import Papa from "papaparse";
 
 import type { Product, UserProfile } from "@/lib/types";
 import {
@@ -238,6 +239,31 @@ export function InventoryDashboard() {
     setSelectedProductIds(newSelectedIds);
   };
 
+  const handleExportCSV = () => {
+    const dataToExport = filteredProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        stock: p.stock,
+        price: p.price,
+        category: p.category,
+        subcategory: p.subcategory,
+        status: p.status,
+        lowStockThreshold: p.lowStockThreshold,
+        supplierId: p.supplierId,
+    }));
+
+    const csv = Papa.unparse(dataToExport);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'products.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
@@ -287,6 +313,12 @@ export function InventoryDashboard() {
                     Print ({selectedProductIds.size})
                   </Button>
                 )}
+                 {filteredProducts.length > 0 && (
+                    <Button variant="outline" onClick={handleExportCSV}>
+                        <FileDown className="mr-2 h-4 w-4" />
+                        Export ({filteredProducts.length})
+                    </Button>
+                 )}
               </div>
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <div className="relative w-full md:w-64">
@@ -387,3 +419,5 @@ export function InventoryDashboard() {
     </div>
   );
 }
+
+    
