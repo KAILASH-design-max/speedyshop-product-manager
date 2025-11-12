@@ -107,15 +107,37 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   const userDoc = doc(db, "users", uid);
   const docSnap = await getDoc(userDoc);
   if (docSnap.exists()) {
-    return docSnap.data() as UserProfile;
+    return { uid: docSnap.id, ...docSnap.data() } as UserProfile;
   }
   return null;
 }
 
-// UPDATE user profile
+// UPDATE user profile (by the user themselves)
 export async function updateUserProfile(
   uid: string,
   updates: Partial<Omit<UserProfile, "id">>
+): Promise<void> {
+  const userDoc = doc(db, "users", uid);
+  await updateDoc(userDoc, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+// GET all users (admin only)
+export async function getAllUsers(): Promise<UserProfile[]> {
+  const querySnapshot = await getDocs(usersCollection);
+  const users: UserProfile[] = [];
+  querySnapshot.forEach((doc) => {
+    users.push({ uid: doc.id, ...doc.data() } as UserProfile);
+  });
+  return users;
+}
+
+// UPDATE user profile (by an admin)
+export async function adminUpdateUser(
+  uid: string,
+  updates: Pick<UserProfile, 'role' | 'status'>
 ): Promise<void> {
   const userDoc = doc(db, "users", uid);
   await updateDoc(userDoc, {

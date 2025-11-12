@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, Calendar } from "lucide-react";
+import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, Calendar, Users } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
@@ -36,6 +36,7 @@ export function Header() {
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/suppliers", label: "Suppliers", icon: Truck },
     { href: "/festivals", label: "Festivals", icon: Calendar },
+    { href: "/users", label: "Users", icon: Users, adminOnly: true },
   ]
   
   const getInitials = (name?: string | null) => {
@@ -52,19 +53,24 @@ export function Header() {
             <span className="ml-2 text-lg font-bold">Stock Watch</span>
           </Link>
           <nav className="hidden md:flex items-center gap-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
-                  pathname === link.href ? "text-primary" : "text-muted-foreground"
-                )}
-              >
-                <link.icon className="h-4 w-4" />
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              if (link.adminOnly && userProfile?.role !== 'admin') {
+                return null;
+              }
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary",
+                    pathname === link.href ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
+                  <link.icon className="h-4 w-4" />
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
         </div>
         <div className="flex items-center gap-2">

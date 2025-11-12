@@ -1,7 +1,7 @@
 
 "use server";
 
-import { addProduct, getUserProfile, updateUserProfile } from "@/lib/firestore";
+import { addProduct, getUserProfile, updateUserProfile, getAllUsers, adminUpdateUser } from "@/lib/firestore";
 import type { Product, UserProfile } from "@/lib/types";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
@@ -71,5 +71,32 @@ export async function updateUserProfileAction(
   } catch (error: any) {
     console.error("Error in updateUserProfileAction:", error);
     return { success: false, error: error.message || "An unexpected error occurred." };
+  }
+}
+
+export async function adminUpdateUserAction(
+  targetUid: string,
+  updates: Pick<UserProfile, 'role' | 'status'>
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await getAuthenticatedUserProfile(['admin']); // Only admins can perform this
+    
+    await adminUpdateUser(targetUid, updates);
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error in adminUpdateUserAction:", error);
+    return { success: false, error: error.message || "An unexpected error occurred." };
+  }
+}
+
+export async function getAllUsersAction(): Promise<{ users?: UserProfile[]; error?: string }> {
+  try {
+    await getAuthenticatedUserProfile(['admin']); // Only admins can view all users
+    const users = await getAllUsers();
+    return { users };
+  } catch (error: any) {
+    console.error("Error in getAllUsersAction:", error);
+    return { error: error.message || "An unexpected error occurred." };
   }
 }
