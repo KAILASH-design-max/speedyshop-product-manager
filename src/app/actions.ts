@@ -1,8 +1,8 @@
 
 "use server";
 
-import { addProduct, getUserProfile, updateUserProfile, getAllUsers, adminUpdateUser } from "@/lib/firestore";
-import type { Product, UserProfile } from "@/lib/types";
+import { addProduct, getUserProfile, updateUserProfile, getAllUsers, adminUpdateUser, receivePurchaseOrder } from "@/lib/firestore";
+import type { Product, PurchaseOrder, UserProfile } from "@/lib/types";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
 import { adminApp } from "@/lib/firebase-admin";
@@ -99,4 +99,15 @@ export async function getAllUsersAction(): Promise<{ users?: UserProfile[]; erro
     console.error("Error in getAllUsersAction:", error);
     return { error: error.message || "An unexpected error occurred." };
   }
+}
+
+export async function receivePurchaseOrderAction(purchaseOrder: PurchaseOrder): Promise<{ success: boolean, error?: string }> {
+    try {
+        await getAuthenticatedUserProfile(['admin', 'inventory-manager']); // Secure: Write access required
+        await receivePurchaseOrder(purchaseOrder);
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error receiving purchase order:", error);
+        return { success: false, error: error.message || "Failed to process purchase order reception." };
+    }
 }

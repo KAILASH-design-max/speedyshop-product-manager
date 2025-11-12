@@ -20,7 +20,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order, Notification, Supplier, Festival } from "./types";
+import type { Product, UserProfile, Order, Notification, Supplier, Festival, PurchaseOrder } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
@@ -29,6 +29,7 @@ const ordersCollection = collection(db, "orders");
 const notificationsCollection = collection(db, "notifications");
 const suppliersCollection = collection(db, "suppliers");
 const festivalsCollection = collection(db, "festivals");
+const purchaseOrdersCollection = collection(db, "purchaseOrders");
 
 
 // GET all products
@@ -307,4 +308,42 @@ export async function updateFestival(festivalId: string, updates: Partial<Omit<F
 export async function deleteFestival(festivalId: string): Promise<void> {
   const festivalDoc = doc(db, "festivals", festivalId);
   await deleteDoc(festivalDoc);
+}
+
+// PURCHASE ORDERS
+export async function getPurchaseOrders(): Promise<PurchaseOrder[]> {
+    const q = query(purchaseOrdersCollection, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    const purchaseOrders: PurchaseOrder[] = [];
+    querySnapshot.forEach((doc) => {
+        purchaseOrders.push({ id: doc.id, ...doc.data() } as PurchaseOrder);
+    });
+    return purchaseOrders;
+}
+
+export async function addPurchaseOrder(poData: Omit<PurchaseOrder, 'id'>): Promise<PurchaseOrder> {
+    const docRef = await addDoc(purchaseOrdersCollection, {
+        ...poData,
+        createdAt: serverTimestamp(),
+    });
+    return { ...poData, id: docRef.id };
+}
+
+export async function receivePurchaseOrder(purchaseOrder: PurchaseOrder): Promise<void> {
+    await runTransaction(db, async (transaction) => {
+        const poRef = doc(db, "purchaseOrders", purchaseOrder.id);
+        
+        // 1. Update the PO status and received date
+        transaction.update(poRef, { 
+            status: 'Received',
+            receivedAt: serverTimestamp() 
+        });
+
+        // 2. Increase stock for each item in the PO
+        for (const item of purchaseOrder.items) {
+            const productRef = doc(db, "products", item.productId);
+            // Use Firestore's increment utility for safe, atomic updates
+            transaction.update(productRef, { stock: increment(item.quantity) });
+        }
+    });
 }

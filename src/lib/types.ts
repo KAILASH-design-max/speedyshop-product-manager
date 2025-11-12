@@ -105,3 +105,20 @@ export interface Festival {
   createdAt?: any;
   updatedAt?: any;
 }
+
+export interface PurchaseOrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  costPerItem: number;
+}
+
+export interface PurchaseOrder {
+    id: string;
+    supplierId: string;
+    items: PurchaseOrderItem[];
+    status: 'Pending' | 'Received';
+    totalCost: number;
+    createdAt: any; // Firebase Timestamp
+    receivedAt?: any; // Firebase Timestamp
+}
