@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PlusCircle, Upload, Search } from "lucide-react";
+import { PlusCircle, Upload, Search, Printer } from "lucide-react";
 
 import type { Product, UserProfile } from "@/lib/types";
 import {
@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useDebounce } from "@/hooks/use-debounce";
+import { PrintBarcodesDialog } from "./print-barcodes-dialog";
 
 
 const productCategories = [
@@ -66,6 +67,8 @@ export function InventoryDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(new Set());
+  const [isPrintDialogOpen, setIsPrintDialogOpen] = useState(false);
 
 
   const hasWriteAccess = userProfile?.role === 'admin' || userProfile?.role === 'inventory-manager';
@@ -156,7 +159,6 @@ export function InventoryDashboard() {
       await deleteProduct(productId);
       setProducts((prev) => prev.filter((p) => p.id !== productId));
       setDeletingProduct(null);
-      toast({ title: "Success", description: "Product deleted successfully." });
     } catch (error) {
       console.error("Error deleting product:", error);
       toast({ variant: "destructive", title: "Error", description: "Could not delete the product." });
@@ -226,11 +228,23 @@ export function InventoryDashboard() {
     }
   };
 
+  const handleProductSelection = (productId: string) => {
+    const newSelectedIds = new Set(selectedProductIds);
+    if (newSelectedIds.has(productId)) {
+      newSelectedIds.delete(productId);
+    } else {
+      newSelectedIds.add(productId);
+    }
+    setSelectedProductIds(newSelectedIds);
+  };
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
+
+  const selectedProducts = products.filter(p => selectedProductIds.has(p.id));
 
 
   return (
@@ -265,7 +279,15 @@ export function InventoryDashboard() {
 
           <div>
             <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
-              <h2 className="text-2xl font-bold">All Products ({filteredProducts.length})</h2>
+              <div className="flex items-center gap-4">
+                 <h2 className="text-2xl font-bold">All Products ({filteredProducts.length})</h2>
+                 {selectedProductIds.size > 0 && (
+                  <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
+                    <Printer className="mr-2 h-4 w-4" />
+                    Print ({selectedProductIds.size})
+                  </Button>
+                )}
+              </div>
               <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                 <div className="relative w-full md:w-64">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -300,9 +322,18 @@ export function InventoryDashboard() {
                     key={product.id}
                     product={product}
                     onEdit={() => setEditingProduct(product)}
-                    onDelete={() => setDeletingProduct(product)}
+                    onDelete={() => {
+                        setSelectedProductIds(prev => {
+                            const newSet = new Set(prev);
+                            newSet.delete(product.id);
+                            return newSet;
+                        });
+                        setDeletingProduct(product);
+                    }}
                     onUpdateStock={() => setUpdatingStockProduct(product)}
                     hasWriteAccess={hasWriteAccess}
+                    isSelected={selectedProductIds.has(product.id)}
+                    onSelectToggle={() => handleProductSelection(product.id)}
                   />
                 ))}
               </div>
@@ -342,6 +373,14 @@ export function InventoryDashboard() {
           open={!!updatingStockProduct}
           onOpenChange={(isOpen) => !isOpen && setUpdatingStockProduct(null)}
           hasWriteAccess={hasWriteAccess}
+        />
+      )}
+      
+      {isPrintDialogOpen && (
+        <PrintBarcodesDialog
+          products={selectedProducts}
+          open={isPrintDialogOpen}
+          onOpenChange={setIsPrintDialogOpen}
         />
       )}
 

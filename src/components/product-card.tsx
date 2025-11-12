@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import Image from 'next/image';
 import { useState } from "react";
+import { Checkbox } from "./ui/checkbox";
 
 
 interface ProductCardProps {
@@ -18,9 +19,11 @@ interface ProductCardProps {
   onDelete: () => void;
   onUpdateStock: () => void;
   hasWriteAccess: boolean;
+  isSelected: boolean;
+  onSelectToggle: () => void;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWriteAccess }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWriteAccess, isSelected, onSelectToggle }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
   
@@ -40,7 +43,7 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWrite
 
 
   return (
-    <Card className={cn("flex flex-col", isLowStock && "border-destructive")}>
+    <Card className={cn("flex flex-col transition-all", isLowStock && "border-destructive", isSelected && "border-primary ring-2 ring-primary")}>
        <CardHeader className="p-0 relative h-40">
         <Image
           src={imageUrl}
@@ -51,6 +54,16 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWrite
           data-ai-hint={`${product.category} ${product.subcategory}`}
           onError={handleImageError}
         />
+         {hasWriteAccess && (
+          <div className="absolute top-2 left-2">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={onSelectToggle}
+              aria-label={`Select ${product.name}`}
+              className="bg-background/70 border-white/50 data-[state=checked]:bg-primary data-[state=checked]:border-primary-foreground"
+            />
+          </div>
+        )}
         <div className="absolute top-2 right-2">
             {hasWriteAccess && (
               <DropdownMenu>
