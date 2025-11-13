@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useEffect, useState } from "react";
 import type { UserProfile } from "@/lib/types";
 import { getUserProfile } from "@/lib/firestore";
+import { NotificationBell } from "./notification-bell";
 
 
 export function Header() {
@@ -74,6 +75,7 @@ export function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-2">
+          <NotificationBell />
           <Button
             variant="ghost"
             size="icon"

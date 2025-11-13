@@ -20,7 +20,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order, Supplier, Festival, PurchaseOrder } from "./types";
+import type { Product, UserProfile, Order, Supplier, Festival, PurchaseOrder, Notification } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
@@ -29,6 +29,43 @@ const ordersCollection = collection(db, "orders");
 const suppliersCollection = collection(db, "suppliers");
 const festivalsCollection = collection(db, "festivals");
 const purchaseOrdersCollection = collection(db, "purchaseOrders");
+const notificationsCollection = collection(db, "notifications");
+
+
+// NOTIFICATIONS
+export async function addNotification(notificationData: Omit<Notification, "id" | "createdAt" | "isRead">) {
+  await addDoc(notificationsCollection, {
+    ...notificationData,
+    isRead: false,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export function getNotifications(callback: (notifications: Notification[]) => void) {
+  const q = query(notificationsCollection, orderBy("createdAt", "desc"), limit(20));
+  return onSnapshot(q, (querySnapshot) => {
+    const notifications: Notification[] = [];
+    querySnapshot.forEach((doc) => {
+      notifications.push({ id: doc.id, ...doc.data() } as Notification);
+    });
+    callback(notifications);
+  });
+}
+
+export async function markNotificationAsRead(notificationId: string) {
+  const notificationDoc = doc(db, "notifications", notificationId);
+  await updateDoc(notificationDoc, { isRead: true });
+}
+
+export async function markAllNotificationsAsRead() {
+    const q = query(notificationsCollection, where("isRead", "==", false));
+    const querySnapshot = await getDocs(q);
+    const batch = writeBatch(db);
+    querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { isRead: true });
+    });
+    await batch.commit();
+}
 
 
 // GET all products
@@ -55,6 +92,16 @@ export async function addProduct(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
+
+  if (productData.stock <= productData.lowStockThreshold) {
+      await addNotification({
+          title: "Low Stock Warning",
+          description: `${productData.name} was added with low stock (${productData.stock} left).`,
+          type: "low-stock",
+          link: `/`, 
+      });
+  }
+
   return { ...productData, id: docRef.id, historicalData: "[]" };
 }
 
@@ -65,6 +112,20 @@ export async function updateProduct(
 ): Promise<void> {
   const productDoc = doc(db, "products", productId);
   
+  if (updates.stock !== undefined && updates.lowStockThreshold !== undefined) {
+    if (updates.stock <= updates.lowStockThreshold) {
+        const product = await getDoc(productDoc);
+        if(product.exists()){
+            await addNotification({
+                title: "Low Stock Warning",
+                description: `${product.data().name} is running low on stock (${updates.stock} left).`,
+                type: "low-stock",
+                link: `/`,
+            });
+        }
+    }
+  }
+
   await updateDoc(productDoc, {
     ...updates,
     updatedAt: serverTimestamp(),
@@ -252,6 +313,14 @@ export async function addPurchaseOrder(poData: Omit<PurchaseOrder, 'id'>): Promi
         ...poData,
         createdAt: serverTimestamp(),
     });
+    
+    await addNotification({
+      title: "New Purchase Order",
+      description: `A new PO has been created (Total: ${poData.totalCost}).`,
+      type: "new-order",
+      link: `/purchase-orders`,
+    });
+
     return { ...poData, id: docRef.id };
 }
 
@@ -271,5 +340,12 @@ export async function receivePurchaseOrder(purchaseOrder: PurchaseOrder): Promis
             // Use Firestore's increment utility for safe, atomic updates
             transaction.update(productRef, { stock: increment(item.quantity) });
         }
+    });
+
+     await addNotification({
+      title: "PO Received",
+      description: `Purchase order #${purchaseOrder.id.substring(0,6)} has been received.`,
+      type: "info",
+      link: `/purchase-orders`,
     });
 }

@@ -112,3 +112,13 @@ export interface PurchaseOrder {
     createdAt: any; // Firebase Timestamp
     receivedAt?: any; // Firebase Timestamp
 }
+
+export interface Notification {
+  id: string;
+  title: string;
+  description: string;
+  type: 'low-stock' | 'new-order' | 'info';
+  isRead: boolean;
+  createdAt: any; // Firebase Timestamp
+  link?: string; // Optional link to navigate to
+}
