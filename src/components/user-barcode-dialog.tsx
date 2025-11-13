@@ -29,7 +29,7 @@ export function UserBarcodeDialog({ userProfile, open, onOpenChange }: UserBarco
         <DialogHeader>
           <DialogTitle>Barcode for {userProfile.name}</DialogTitle>
           <DialogDescription>
-            This barcode uniquely identifies you in the system.
+            This barcode uniquely identifies the user in the system.
           </DialogDescription>
         </DialogHeader>
         

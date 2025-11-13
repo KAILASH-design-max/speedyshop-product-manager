@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MoreHorizontal, Edit, Users, ShieldCheck } from "lucide-react";
+import { MoreHorizontal, Edit, Users, Barcode as BarcodeIcon } from "lucide-react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { adminUpdateUserAction, getAllUsersAction } from "@/app/actions";
 import { useRouter } from "next/navigation";
 import { EditUserDialog, type EditUserFormValues } from "./edit-user-dialog";
+import { UserBarcodeDialog } from "./user-barcode-dialog";
 
 export function UsersPage() {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ export function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [barcodeUser, setBarcodeUser] = useState<UserProfile | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -108,7 +110,7 @@ export function UsersPage() {
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead><span className="sr-only">Actions</span></TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -136,20 +138,26 @@ export function UsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0" disabled={u.uid === user?.uid}>
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setEditingUser(u)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            <span>Edit Role/Status</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" onClick={() => setBarcodeUser(u)}>
+                          <BarcodeIcon className="h-4 w-4" />
+                          <span className="sr-only">Show Barcode</span>
+                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0" disabled={u.uid === user?.uid}>
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => setEditingUser(u)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              <span>Edit Role/Status</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -166,6 +174,13 @@ export function UsersPage() {
             open={!!editingUser}
             onOpenChange={(isOpen) => !isOpen && setEditingUser(null)}
             isSaving={isSaving}
+        />
+    )}
+     {barcodeUser && (
+        <UserBarcodeDialog
+            userProfile={barcodeUser}
+            open={!!barcodeUser}
+            onOpenChange={(isOpen) => !isOpen && setBarcodeUser(null)}
         />
     )}
     </>

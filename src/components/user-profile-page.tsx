@@ -119,10 +119,16 @@ export function UserProfilePage() {
                       </div>
                     </div>
                   </div>
-                  <Button variant="outline" onClick={() => setIsEditOpen(true)}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit Profile
-                  </Button>
+                  <div className="flex items-center gap-2">
+                     <Button variant="outline" size="icon" onClick={() => setIsBarcodeOpen(true)}>
+                        <BarcodeIcon className="h-4 w-4" />
+                        <span className="sr-only">Show My Barcode</span>
+                      </Button>
+                    <Button variant="outline" onClick={() => setIsEditOpen(true)}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Edit Profile
+                    </Button>
+                  </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -138,12 +144,6 @@ export function UserProfilePage() {
                     <ProfileInfoItem icon={Briefcase} label="Job Title" value={userProfile.jobTitle} />
                     <ProfileInfoItem icon={Building} label="Department" value={userProfile.department} />
                   </div>
-              </div>
-               <div className="mt-8 flex justify-center">
-                <Button onClick={() => setIsBarcodeOpen(true)}>
-                  <BarcodeIcon className="mr-2 h-4 w-4" />
-                  Show My Barcode
-                </Button>
               </div>
             </CardContent>
           </Card>
