@@ -76,10 +76,10 @@ export function ViewOrderDialog({ order, customerName, open, onOpenChange, hasWr
                      <div className="space-y-2">
                         <h4 className="font-semibold mb-2">Order Information</h4>
                         <p><span className="text-muted-foreground">Date:</span> {order.orderDate?.toDate ? format(order.orderDate.toDate(), "MMM d, yyyy") : '-'}</p>
-                        <p className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
                             <span className="text-muted-foreground">Status:</span> 
                             <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
-                        </p>
+                        </div>
                          <p><span className="text-muted-foreground">Payment:</span> {order.paymentMethod}</p>
                     </div>
                 </div>
