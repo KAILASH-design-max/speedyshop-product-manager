@@ -194,12 +194,29 @@ export async function adminUpdateUser(
 
 // GET all orders
 export async function getOrders(): Promise<Order[]> {
-  const querySnapshot = await getDocs(ordersCollection);
-  const orders: Order[] = [];
-  querySnapshot.forEach((doc) => {
-    orders.push({ id: doc.id, ...doc.data() } as Order);
-  });
-  return orders;
+    const q = query(ordersCollection, orderBy("orderDate", "desc"));
+    const querySnapshot = await getDocs(q);
+    const orders: Order[] = [];
+    querySnapshot.forEach((doc) => {
+        orders.push({ id: doc.id, ...doc.data() } as Order);
+    });
+    return orders;
+}
+
+// UPDATE an order's status
+export async function updateOrderStatus(orderId: string, status: Order['status']): Promise<void> {
+    const orderDoc = doc(db, "orders", orderId);
+    await updateDoc(orderDoc, {
+        status: status,
+        updatedAt: serverTimestamp(),
+    });
+
+    await addNotification({
+      title: "Order Status Updated",
+      description: `Order #${orderId.substring(0,6)} is now "${status}".`,
+      type: "info",
+      link: `/orders`,
+    });
 }
 
 // ADD a new order and decrease stock
@@ -232,7 +249,7 @@ export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Pr
     }
   });
   
-  return { ...orderData, id: newOrderRef.id };
+  return { ...orderData, id: newOrderRef.id, ...orderData };
 }
 
 

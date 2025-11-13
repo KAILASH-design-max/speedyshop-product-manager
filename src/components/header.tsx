@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, Calendar, Users, ClipboardList } from "lucide-react";
+import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, Calendar, Users, ClipboardList, ShoppingBag } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
@@ -34,6 +34,7 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/orders", label: "Sales Orders", icon: ShoppingBag },
     { href: "/purchase-orders", label: "Purchase Orders", icon: ClipboardList },
     { href: "/suppliers", label: "Suppliers", icon: Truck },
     { href: "/festivals", label: "Festivals", icon: Calendar },

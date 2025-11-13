@@ -50,7 +50,7 @@ export interface DeliveryAddress {
 }
 
 export interface Order {
-  id?: string;
+  id: string;
   userId: string;
   items: OrderItem[];
   totalAmount: number;
@@ -72,6 +72,7 @@ export interface Order {
   estimatedDeliveryTime?: any; // Firebase Timestamp
   phoneNumber?: string;
   updatedAt?: any; // Firebase Timestamp
+  createdAt?: any; // Using `any` for Firebase Timestamp flexibility
 }
 
 export interface Supplier {
