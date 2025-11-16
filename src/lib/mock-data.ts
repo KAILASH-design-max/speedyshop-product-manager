@@ -1,4 +1,4 @@
-import type { Product } from "./types";
+import type { Product, ProductVariant } from "./types";
 
 const generateHistoricalData = (baseStock: number, days: number) => {
   const data = [];
@@ -15,11 +15,20 @@ const generateHistoricalData = (baseStock: number, days: number) => {
   return JSON.stringify(data, null, 2);
 };
 
-export const initialProducts: Product[] = [
+const createDefaultVariant = (product: Omit<Product, 'variants' | 'isVariable' | 'historicalData'> & { price: number }): ProductVariant => ({
+  id: `${product.id}-default`,
+  name: "Default",
+  stock: product.stock || 0,
+  lowStockThreshold: product.lowStockThreshold || 10,
+  price: product.price,
+});
+
+const mockProductsRaw = [
   {
     id: "prod_001",
     name: "Classic T-Shirt",
     stock: 85,
+    price: 15.99,
     lowStockThreshold: 20,
     historicalData: generateHistoricalData(100, 30),
   },
@@ -27,6 +36,7 @@ export const initialProducts: Product[] = [
     id: "prod_002",
     name: "Denim Jeans",
     stock: 42,
+    price: 49.99,
     lowStockThreshold: 15,
     historicalData: generateHistoricalData(50, 30),
   },
@@ -34,6 +44,7 @@ export const initialProducts: Product[] = [
     id: "prod_003",
     name: "Leather Jacket",
     stock: 12,
+    price: 129.99,
     lowStockThreshold: 10,
     historicalData: generateHistoricalData(20, 30),
   },
@@ -41,6 +52,7 @@ export const initialProducts: Product[] = [
     id: "prod_004",
     name: "Running Sneakers",
     stock: 55,
+    price: 89.99,
     lowStockThreshold: 25,
     historicalData: generateHistoricalData(70, 30),
   },
@@ -48,7 +60,26 @@ export const initialProducts: Product[] = [
     id: "prod_005",
     name: "Wool Scarf",
     stock: 30,
+    price: 24.99,
     lowStockThreshold: 15,
     historicalData: generateHistoricalData(40, 30),
   },
 ];
+
+
+export const initialProducts: Product[] = mockProductsRaw.map(p => {
+  const { stock, price, lowStockThreshold, ...rest } = p;
+  return {
+    ...rest,
+    isVariable: false,
+    variants: [
+      {
+        id: `${p.id}-default`,
+        name: "Default",
+        stock: stock,
+        price: price,
+        lowStockThreshold: lowStockThreshold
+      }
+    ]
+  }
+});
