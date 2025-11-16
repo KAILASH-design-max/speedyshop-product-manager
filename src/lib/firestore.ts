@@ -441,16 +441,9 @@ export async function receivePurchaseOrder(purchaseOrder: PurchaseOrder): Promis
     const uniqueProductIds = [...new Set(purchaseOrder.items.map(item => item.productId))];
     for (const productId of uniqueProductIds) {
       const productRef = doc(db, "products", productId);
-      productRefs.set(productId, { productRef });
+      const productDoc = await transaction.get(productRef);
+      productRefs.set(productId, { productRef, productDoc });
     }
-
-    const productDocs = await transaction.getAll(...Array.from(productRefs.values()).map(p => p.productRef));
-    productDocs.forEach(productDoc => {
-        if(productDoc.exists()) {
-            const ref = productRefs.get(productDoc.id);
-            if(ref) ref.productDoc = productDoc;
-        }
-    });
 
     // Group updates by product ID
     const stockUpdates = new Map<string, any[]>();
@@ -464,7 +457,7 @@ export async function receivePurchaseOrder(purchaseOrder: PurchaseOrder): Promis
     // Apply updates
     for (const [productId, updates] of stockUpdates.entries()) {
       const ref = productRefs.get(productId);
-      if (!ref || !ref.productDoc) {
+      if (!ref || !ref.productDoc || !ref.productDoc.exists()) {
         throw new Error(`Product with ID ${productId} not found during transaction.`);
       }
 
