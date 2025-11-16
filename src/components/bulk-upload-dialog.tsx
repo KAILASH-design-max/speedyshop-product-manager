@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -59,20 +60,32 @@ export function BulkUploadDialog({ children, onUpload }: BulkUploadDialogProps) 
             return;
         }
 
-        const products: Omit<Product, "id" | "historicalData">[] = results.data.map((row: any) => ({
-            name: row.name || "",
-            stock: parseInt(row.stock, 10) || 0,
-            price: parseFloat(row.price) || 0,
-            category: row.category || "",
-            lowStockThreshold: parseInt(row.lowStockThreshold, 10) || 10,
-            images: row.imageUrl ? [row.imageUrl] : [],
-            subcategory: row.subcategory || "",
-            description: row.description || "",
-            weight: row.weight || "",
-            origin: row.origin || "",
-            status: row.status === "inactive" ? "inactive" : "active",
-            originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : undefined,
-        }));
+        const products: Omit<Product, "id" | "historicalData">[] = results.data.map((row: any) => {
+            const price = parseFloat(row.price) || 0;
+            const stock = parseInt(row.stock, 10) || 0;
+            const lowStockThreshold = parseInt(row.lowStockThreshold, 10) || 10;
+            const originalPrice = row.originalPrice ? parseFloat(row.originalPrice) : undefined;
+
+            return {
+                name: row.name || "",
+                category: row.category || "",
+                images: row.imageUrl ? [row.imageUrl] : [],
+                subcategory: row.subcategory || "",
+                description: row.description || "",
+                weight: row.weight || "",
+                origin: row.origin || "",
+                status: row.status === "inactive" ? "inactive" : "active",
+                isVariable: false,
+                variants: [{
+                    id: "default-variant",
+                    name: "Default",
+                    price,
+                    stock,
+                    lowStockThreshold,
+                    originalPrice
+                }]
+            };
+        });
 
         onUpload(products);
         setIsUploading(false);
