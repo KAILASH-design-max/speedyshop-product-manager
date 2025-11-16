@@ -15,7 +15,7 @@ interface StockReportChartProps {
 export function StockReportChart({ products }: StockReportChartProps) {
     const chartData = useMemo(() => {
         return products.flatMap(p => 
-            p.variants.map(v => ({
+            (p.variants || []).map(v => ({
                 name: p.isVariable ? `${p.name.slice(0,10)}... (${v.name})` : p.name,
                 stock: v.stock
             }))
