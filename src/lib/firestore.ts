@@ -84,10 +84,12 @@ export async function getProducts(): Promise<Product[]> {
 export async function addProduct(
   productData: Omit<Product, "id" | "historicalData">
 ): Promise<Product> {
+  const totalStock = productData.variants.reduce((sum, v) => sum + v.stock, 0);
+
   const docRef = await addDoc(productsCollection, {
     ...productData,
     historicalData: JSON.stringify(
-      [{ date: new Date().toISOString().split("T")[0], stock: productData.stock }],
+      [{ date: new Date().toISOString().split("T")[0], stock: totalStock }],
       null,
       2
     ),
@@ -95,13 +97,15 @@ export async function addProduct(
     updatedAt: serverTimestamp(),
   });
 
-  if (productData.stock <= productData.lowStockThreshold) {
-      await addNotification({
-          title: "Low Stock Warning",
-          description: `${productData.name} was added with low stock (${productData.stock} left).`,
-          type: "low-stock",
-          link: `/`, 
-      });
+  for (const variant of productData.variants) {
+      if (variant.stock <= variant.lowStockThreshold) {
+          await addNotification({
+              title: "Low Stock Warning",
+              description: `${productData.name} (${variant.name}) was added with low stock (${variant.stock} left).`,
+              type: "low-stock",
+              link: `/`, 
+          });
+      }
   }
 
   return { ...productData, id: docRef.id, historicalData: "[]" };
@@ -112,23 +116,27 @@ export async function updateProduct(
   productId: string,
   updates: Partial<Omit<Product, "id">>
 ): Promise<void> {
-  const productDoc = doc(db, "products", productId);
-  
-  if (updates.stock !== undefined && updates.lowStockThreshold !== undefined) {
-    if (updates.stock <= updates.lowStockThreshold) {
-        const product = await getDoc(productDoc);
-        if(product.exists()){
-            await addNotification({
-                title: "Low Stock Warning",
-                description: `${product.data().name} is running low on stock (${updates.stock} left).`,
-                type: "low-stock",
-                link: `/`,
-            });
+  const productDocRef = doc(db, "products", productId);
+
+  // If variants are being updated, check for low stock on each variant
+  if (updates.variants) {
+    const productDoc = await getDoc(productDocRef);
+    if (productDoc.exists()) {
+      const productName = productDoc.data().name;
+      for (const variant of updates.variants) {
+        if (variant.stock <= variant.lowStockThreshold) {
+          await addNotification({
+            title: "Low Stock Warning",
+            description: `${productName} (${variant.name}) is running low on stock (${variant.stock} left).`,
+            type: "low-stock",
+            link: `/`,
+          });
         }
+      }
     }
   }
-
-  await updateDoc(productDoc, {
+  
+  await updateDoc(productDocRef, {
     ...updates,
     updatedAt: serverTimestamp(),
   });
@@ -270,16 +278,23 @@ export async function addOrderAndDecreaseStock(orderData: Omit<Order, "id">): Pr
         throw new Error(`Product with ID ${item.productId} does not exist.`);
       }
 
-      const productData = productDoc.data();
-      const currentStock = productData.stock;
+      const productData = productDoc.data() as Product;
+      const variantIndex = productData.variants.findIndex(v => v.id === item.variantId);
+      
+      if (variantIndex === -1) {
+          throw new Error(`Variant with ID ${item.variantId} not found in product ${item.productId}`);
+      }
+
+      const currentStock = productData.variants[variantIndex].stock;
       
       if (currentStock < item.quantity) {
         throw new Error(`Not enough stock for ${item.name}. Available: ${currentStock}, Requested: ${item.quantity}`);
       }
       
-      const newStock = currentStock - item.quantity;
-      transaction.update(productRef, { stock: newStock });
+      const newVariants = [...productData.variants];
+      newVariants[variantIndex].stock -= item.quantity;
       
+      transaction.update(productRef, { variants: newVariants });
     }
   });
   
@@ -410,27 +425,69 @@ export async function addPurchaseOrder(poData: Omit<PurchaseOrder, 'id'>): Promi
 }
 
 export async function receivePurchaseOrder(purchaseOrder: PurchaseOrder): Promise<void> {
-    await runTransaction(db, async (transaction) => {
-        const poRef = doc(db, "purchaseOrders", purchaseOrder.id);
-        
-        // 1. Update the PO status and received date
-        transaction.update(poRef, { 
-            status: 'Received',
-            receivedAt: serverTimestamp() 
-        });
+  await runTransaction(db, async (transaction) => {
+    const poRef = doc(db, "purchaseOrders", purchaseOrder.id);
+    
+    // 1. Update the PO status and received date
+    transaction.update(poRef, { 
+        status: 'Received',
+        receivedAt: serverTimestamp() 
+    });
 
-        // 2. Increase stock for each item in the PO
-        for (const item of purchaseOrder.items) {
-            const productRef = doc(db, "products", item.productId);
-            // Use Firestore's increment utility for safe, atomic updates
-            transaction.update(productRef, { stock: increment(item.quantity) });
+    // 2. Increase stock for each item in the PO
+    const productRefs = new Map<string, { productRef: any, productDoc?: any }>();
+    
+    // Pre-fetch all unique product documents
+    const uniqueProductIds = [...new Set(purchaseOrder.items.map(item => item.productId))];
+    for (const productId of uniqueProductIds) {
+      const productRef = doc(db, "products", productId);
+      productRefs.set(productId, { productRef });
+    }
+
+    const productDocs = await transaction.getAll(...Array.from(productRefs.values()).map(p => p.productRef));
+    productDocs.forEach(productDoc => {
+        if(productDoc.exists()) {
+            const ref = productRefs.get(productDoc.id);
+            if(ref) ref.productDoc = productDoc;
         }
     });
 
-     await addNotification({
-      title: "PO Received",
-      description: `Purchase order #${purchaseOrder.id.substring(0,6)} has been received.`,
-      type: "info",
-      link: `/purchase-orders`,
-    });
+    // Group updates by product ID
+    const stockUpdates = new Map<string, any[]>();
+    for (const item of purchaseOrder.items) {
+      if (!stockUpdates.has(item.productId)) {
+        stockUpdates.set(item.productId, []);
+      }
+      stockUpdates.get(item.productId)!.push({ variantId: item.variantId, quantity: item.quantity });
+    }
+
+    // Apply updates
+    for (const [productId, updates] of stockUpdates.entries()) {
+      const ref = productRefs.get(productId);
+      if (!ref || !ref.productDoc) {
+        throw new Error(`Product with ID ${productId} not found during transaction.`);
+      }
+
+      const productData = ref.productDoc.data() as Product;
+      const newVariants = [...productData.variants];
+
+      for (const update of updates) {
+        const variantIndex = newVariants.findIndex(v => v.id === update.variantId);
+        if (variantIndex !== -1) {
+          newVariants[variantIndex].stock += update.quantity;
+        } else {
+          // Handle case where variant is not found, maybe throw error or log
+          console.warn(`Variant ${update.variantId} not found on product ${productId} during PO reception.`);
+        }
+      }
+      transaction.update(ref.productRef, { variants: newVariants });
+    }
+  });
+
+  await addNotification({
+    title: "PO Received",
+    description: `Purchase order #${purchaseOrder.id.substring(0,6)} has been received.`,
+    type: "info",
+    link: `/purchase-orders`,
+  });
 }

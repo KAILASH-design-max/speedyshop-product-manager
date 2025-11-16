@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useMemo } from "react";
 import { BarChart, Package } from "lucide-react";
 import { Bar, CartesianGrid, XAxis, YAxis, BarChart as RechartsBarChart } from "recharts";
 import type { Product } from "@/lib/types";
@@ -11,7 +13,15 @@ interface StockReportChartProps {
 }
 
 export function StockReportChart({ products }: StockReportChartProps) {
-    const chartData = products.map(p => ({ name: p.name, stock: p.stock }));
+    const chartData = useMemo(() => {
+        return products.flatMap(p => 
+            p.variants.map(v => ({
+                name: p.isVariable ? `${p.name.slice(0,10)}... (${v.name})` : p.name,
+                stock: v.stock
+            }))
+        ).slice(0, 20); // Show top 20 variants for clarity
+    }, [products]);
+
     const chartConfig = {
         stock: {
             label: "Stock",
@@ -26,7 +36,7 @@ export function StockReportChart({ products }: StockReportChartProps) {
             <BarChart className="h-6 w-6 text-primary" />
             <CardTitle>Stock Levels Overview</CardTitle>
         </div>
-        <CardDescription>A visual summary of current stock quantities.</CardDescription>
+        <CardDescription>A visual summary of current stock quantities across products/variants.</CardDescription>
       </CardHeader>
       <CardContent>
         {products.length > 0 ? (

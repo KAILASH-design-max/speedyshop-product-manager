@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from "react";
@@ -16,16 +17,18 @@ export function TopProductsChart({ orders }: TopProductsChartProps) {
     const productSales: { [key: string]: { name: string, quantity: number } } = {};
     orders.forEach(order => {
       order.items.forEach(item => {
-        if (productSales[item.productId]) {
-          productSales[item.productId].quantity += item.quantity;
+        // Use variantId for uniqueness if available, otherwise productId
+        const uniqueId = item.variantId || item.productId;
+        if (productSales[uniqueId]) {
+          productSales[uniqueId].quantity += item.quantity;
         } else {
-          productSales[item.productId] = { name: item.name, quantity: item.quantity };
+          productSales[uniqueId] = { name: item.name, quantity: item.quantity };
         }
       });
     });
     return Object.values(productSales)
       .sort((a, b) => b.quantity - a.quantity)
-      .slice(0, 5); // Top 5 products
+      .slice(0, 5); // Top 5 products/variants
   }, [orders]);
   
   const chartConfig = {
@@ -42,7 +45,7 @@ export function TopProductsChart({ orders }: TopProductsChartProps) {
             <Award className="h-6 w-6 text-primary" />
             <CardTitle>Top Selling Products</CardTitle>
         </div>
-        <CardDescription>Your best performing products by quantity sold.</CardDescription>
+        <CardDescription>Your best performing products and variants by quantity sold.</CardDescription>
       </CardHeader>
       <CardContent>
         {topProducts.length > 0 ? (

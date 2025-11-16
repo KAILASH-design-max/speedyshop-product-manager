@@ -1,7 +1,7 @@
 
 "use client";
 
-import { MoreVertical, Edit, Trash2, Package, AlertTriangle, Ticket } from "lucide-react";
+import { MoreVertical, Edit, Trash2, Package, AlertTriangle, Ticket, Layers } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import Image from 'next/image';
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Checkbox } from "./ui/checkbox";
 
 
@@ -25,8 +25,25 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onAddToDeal, hasWriteAccess, isSelected, onSelectToggle }: ProductCardProps) {
-  const isLowStock = product.stock <= product.lowStockThreshold;
-  const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
+  
+  const totalStock = useMemo(() => {
+    if (!product.variants || product.variants.length === 0) {
+      return product.stock || 0;
+    }
+    return product.variants.reduce((sum, v) => sum + v.stock, 0);
+  }, [product]);
+  
+  const lowStockThreshold = useMemo(() => {
+     if (!product.variants || product.variants.length === 0) {
+      return product.lowStockThreshold || 10;
+    }
+    // For variable products, we could use the average, min, or max threshold.
+    // Let's use the threshold of the first variant for simplicity.
+    return product.variants[0].lowStockThreshold;
+  }, [product])
+
+  const isLowStock = totalStock <= lowStockThreshold;
+  const stockPercentage = Math.min((totalStock / (lowStockThreshold * 2)) * 100, 100);
   
   const getSafeImageUrl = () => {
     const firstImage = product.images && product.images.length > 0 ? product.images[0] : '';
@@ -86,13 +103,19 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onAddToD
       <div className="p-4 flex flex-col flex-grow">
         <div>
           <CardTitle className="text-lg">{product.name}</CardTitle>
-          <CardDescription>ID: {product.id.substring(0,6)}...</CardDescription>
+          <CardDescription>
+            {product.isVariable ? (
+              <span className="flex items-center text-xs"><Layers className="mr-1 h-3 w-3" /> Variable Product</span>
+            ) : (
+               `ID: ${product.id.substring(0,6)}...`
+            )}
+          </CardDescription>
         </div>
         <CardContent className="flex-grow space-y-4 p-0 pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center text-3xl font-bold">
               <Package className="mr-2 h-7 w-7 text-primary" />
-              {product.stock}
+              {totalStock}
             </div>
             {isLowStock && (
               <div className="flex items-center text-destructive text-sm font-medium">
@@ -103,8 +126,8 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onAddToD
           </div>
           <div>
               <div className="text-xs text-muted-foreground flex justify-between mb-1">
-                  <span>Threshold: {product.lowStockThreshold}</span>
-                  <span>Target: {product.lowStockThreshold * 2}</span>
+                  <span>Threshold: {lowStockThreshold}</span>
+                  <span>Target: {lowStockThreshold * 2}</span>
               </div>
               <Progress value={stockPercentage} className={isLowStock ? "[&>div]:bg-destructive" : ""} />
           </div>

@@ -1,22 +1,34 @@
+export interface ProductVariant {
+  id: string; // e.g., "prod_001-small-red"
+  name: string; // e.g., "Small, Red"
+  stock: number;
+  price: number;
+  lowStockThreshold: number;
+  sku?: string;
+  originalPrice?: number;
+  weight?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
-  stock: number;
-  lowStockThreshold: number;
-  historicalData: string;
-  category?: string;
+  isVariable: boolean;
+  variants: ProductVariant[];
   description?: string;
+  category?: string;
   images?: string[];
   origin?: string;
-  originalPrice?: number;
   popularity?: number;
-  price?: number;
   status?: 'active' | 'inactive';
   subcategory?: string;
   supplierId?: string;
-  weight?: string;
   createdAt?: any; // Using `any` for Firebase Timestamp flexibility
   updatedAt?: any; // Using `any` for Firebase Timestamp flexibility
+  // Fields moved to variant: stock, price, lowStockThreshold, originalPrice, weight
+  stock?: number; // Kept for backwards compatibility / simple products if needed, but logic moves to variants
+  price?: number; // Kept for backwards compatibility
+  lowStockThreshold?: number; // Kept for backwards compatibility
+  historicalData: string; // This will now need to aggregate data from all variants
 }
 
 export interface UserProfile {
@@ -35,7 +47,8 @@ export interface UserProfile {
 
 export interface OrderItem {
   productId: string;
-  name: string;
+  variantId: string; // New: to identify the specific variant
+  name: string; // Will now be "Product Name (Variant Name)"
   price: number;
   quantity: number;
   imageUrl?: string;
@@ -110,7 +123,8 @@ export interface Deal {
 
 export interface PurchaseOrderItem {
   productId: string;
-  name: string;
+  variantId: string; // New
+  name: string; // Will now be "Product Name (Variant Name)"
   quantity: number;
   costPerItem: number;
 }

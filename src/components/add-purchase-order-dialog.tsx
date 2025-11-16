@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { PlusCircle, Search, Trash2, X } from "lucide-react";
+import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useToast } from "@/hooks/use-toast";
 
-import type { Product, PurchaseOrder, PurchaseOrderItem, Supplier } from "@/lib/types";
+import type { Product, PurchaseOrder, Supplier, ProductVariant } from "@/lib/types";
 import { getProducts, getSuppliers } from "@/lib/firestore";
 import { formatCurrency } from "@/lib/utils";
 
@@ -20,10 +20,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "./ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "./ui/command";
 
 const poItemSchema = z.object({
   productId: z.string().min(1),
+  variantId: z.string().min(1),
   name: z.string().min(1),
   quantity: z.coerce.number().min(1, "Quantity must be at least 1"),
   costPerItem: z.coerce.number().min(0, "Cost must be a positive number"),
@@ -46,9 +48,7 @@ export function AddPurchaseOrderDialog({ onAddPurchaseOrder, open, onOpenChange 
   const { toast } = useToast();
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-
+  
   const form = useForm<PurchaseOrderFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,18 +75,22 @@ export function AddPurchaseOrderDialog({ onAddPurchaseOrder, open, onOpenChange 
     fetchData();
   }, [toast]);
   
-  const selectedProductIds = form.watch("items").map(item => item.productId);
+  const selectedVariantIds = form.watch("items").map(item => item.variantId);
 
-  const handleAddProduct = (product: Product) => {
-    if (selectedProductIds.includes(product.id)) {
-      toast({ variant: "destructive", description: `${product.name} is already in the order.` });
+  const handleAddProductVariant = (product: Product, variant: ProductVariant) => {
+    if (selectedVariantIds.includes(variant.id)) {
+      toast({ variant: "destructive", description: `${product.name} (${variant.name}) is already in the order.` });
       return;
     }
-    append({ productId: product.id, name: product.name, quantity: 1, costPerItem: product.price || 0 });
+    append({ 
+        productId: product.id, 
+        variantId: variant.id, 
+        name: `${product.name} (${variant.name})`, 
+        quantity: 1, 
+        costPerItem: variant.price || 0 
+    });
   };
   
-  const filteredProducts = allProducts.filter(p => p.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
-
   const totalCost = form.watch("items").reduce((total, item) => total + (item.quantity * item.costPerItem), 0);
 
   const handleSubmit = (values: PurchaseOrderFormValues) => {
@@ -105,7 +109,7 @@ export function AddPurchaseOrderDialog({ onAddPurchaseOrder, open, onOpenChange 
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Create Purchase Order</DialogTitle>
-          <DialogDescription>Select a supplier and add products to create a new PO.</DialogDescription>
+          <DialogDescription>Select a supplier and add product variants to create a new PO.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
@@ -113,27 +117,7 @@ export function AddPurchaseOrderDialog({ onAddPurchaseOrder, open, onOpenChange 
               {/* Left Column: Product Selection */}
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Select Products</h3>
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search products..."
-                    className="pl-8"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <ScrollArea className="h-72 border rounded-md">
-                    <div className="p-2 space-y-2">
-                        {filteredProducts.map(product => (
-                            <div key={product.id} className="flex items-center justify-between p-2 rounded-md hover:bg-muted">
-                                <span className="text-sm font-medium">{product.name}</span>
-                                <Button type="button" size="sm" variant="outline" onClick={() => handleAddProduct(product)} disabled={selectedProductIds.includes(product.id)}>
-                                    <PlusCircle className="mr-2 h-4 w-4" /> Add
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </ScrollArea>
+                <ProductVariantSelector products={allProducts} onSelect={handleAddProductVariant} selectedVariantIds={selectedVariantIds} />
               </div>
 
               {/* Right Column: Order Details */}
@@ -224,3 +208,53 @@ export function AddPurchaseOrderDialog({ onAddPurchaseOrder, open, onOpenChange 
   );
 }
 
+function ProductVariantSelector({ products, onSelect, selectedVariantIds }: { products: Product[], onSelect: (product: Product, variant: ProductVariant) => void, selectedVariantIds: string[] }) {
+    const [open, setOpen] = useState(false)
+    const [searchTerm, setSearchTerm] = useState("")
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    const filteredProducts = products.filter(p => p.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()));
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                >
+                    <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                    Search product or variant...
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                <Command>
+                    <CommandInput placeholder="Search..." onValueChange={setSearchTerm} />
+                    <CommandEmpty>No product found.</CommandEmpty>
+                    <CommandList>
+                        <ScrollArea className="h-72">
+                            {filteredProducts.map((product) => (
+                                <CommandGroup key={product.id} heading={product.name}>
+                                    {product.variants.map((variant) => (
+                                        <CommandItem
+                                            key={variant.id}
+                                            value={`${product.name} ${variant.name}`}
+                                            onSelect={() => {
+                                                onSelect(product, variant)
+                                                setOpen(false)
+                                            }}
+                                            disabled={selectedVariantIds.includes(variant.id)}
+                                        >
+                                            {variant.name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            ))}
+                        </ScrollArea>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    )
+}

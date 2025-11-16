@@ -1,11 +1,12 @@
 
+
 "use client";
 
 import { useEffect, useState } from "react";
 import { PlusCircle, Upload, Search, Printer, FileDown } from "lucide-react";
 import Papa from "papaparse";
 
-import type { Product, UserProfile } from "@/lib/types";
+import type { Product, UserProfile, ProductVariant } from "@/lib/types";
 import {
   addProduct,
   deleteProduct,
@@ -169,7 +170,7 @@ export function InventoryDashboard() {
     }
   };
 
-  const handleUpdateStock = async (productId: string, newStock: number) => {
+  const handleUpdateStock = async (productId: string, updatedVariants: ProductVariant[]) => {
     if (!hasWriteAccess) {
        toast({ variant: "destructive", title: "Permission Denied", description: "You do not have permission to update stock." });
        return;
@@ -179,25 +180,23 @@ export function InventoryDashboard() {
 
     try {
       const historicalData = JSON.parse(productToUpdate.historicalData || "[]");
+      const totalNewStock = updatedVariants.reduce((sum, v) => sum + v.stock, 0);
+
       const newHistoricalData = [
         ...historicalData,
-        { date: new Date().toISOString().split("T")[0], stock: newStock },
+        { date: new Date().toISOString().split("T")[0], stock: totalNewStock },
       ];
 
-      const updatedProductData = {
-        ...productToUpdate,
-        stock: newStock,
-        historicalData: JSON.stringify(newHistoricalData, null, 2),
-      };
-
       await updateProduct(productId, {
-        stock: newStock,
-        historicalData: updatedProductData.historicalData,
+        variants: updatedVariants,
+        historicalData: JSON.stringify(newHistoricalData, null, 2),
       });
 
+      // Update local state
       setProducts((prev) =>
-        prev.map((p) => (p.id === productId ? updatedProductData : p))
+        prev.map((p) => (p.id === productId ? { ...p, variants: updatedVariants, historicalData: JSON.stringify(newHistoricalData) } : p))
       );
+
       setUpdatingStockProduct(null);
       toast({ title: "Success", description: "Stock updated successfully." });
     } catch (error) {
@@ -243,24 +242,27 @@ export function InventoryDashboard() {
   };
 
   const handleExportCSV = () => {
-    const dataToExport = filteredProducts.map(p => ({
-        id: p.id,
-        name: p.name,
-        stock: p.stock,
-        price: p.price,
+    const dataToExport = filteredProducts.flatMap(p => 
+      p.variants.map(v => ({
+        productId: p.id,
+        productName: p.name,
+        variantId: v.id,
+        variantName: v.name,
+        stock: v.stock,
+        price: v.price,
+        sku: v.sku,
         category: p.category,
         subcategory: p.subcategory,
         status: p.status,
-        lowStockThreshold: p.lowStockThreshold,
-        supplierId: p.supplierId,
-    }));
+      }))
+    );
 
     const csv = Papa.unparse(dataToExport);
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', 'products.csv');
+    link.setAttribute('download', 'products_with_variants.csv');
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

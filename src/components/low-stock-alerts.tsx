@@ -1,16 +1,28 @@
+
 "use client";
 
 import { AlertTriangle, Package } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "./ui/scroll-area";
+import { useMemo } from "react";
 
 interface LowStockAlertsProps {
   products: Product[];
 }
 
 export function LowStockAlerts({ products }: LowStockAlertsProps) {
-  const lowStockItems = products.filter((p) => p.stock <= p.lowStockThreshold);
+  const lowStockItems = useMemo(() => {
+    return products.flatMap(p => 
+      p.variants
+        .filter(v => v.stock <= v.lowStockThreshold)
+        .map(v => ({
+          id: `${p.id}-${v.id}`,
+          name: p.isVariable ? `${p.name} (${v.name})` : p.name,
+          stock: v.stock,
+        }))
+    );
+  }, [products]);
 
   return (
     <Card className="col-span-1 lg:col-span-2">

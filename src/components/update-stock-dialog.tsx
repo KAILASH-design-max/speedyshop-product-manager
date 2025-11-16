@@ -1,66 +1,77 @@
+
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip } from "recharts";
 import { Barcode as BarcodeIcon } from "lucide-react";
-import { useState } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useState, useMemo } from "react";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import type { Product } from "@/lib/types";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart";
-import { Card, CardContent } from "./ui/card";
+import type { Product, ProductVariant } from "@/lib/types";
 import { BarcodeDialog } from "./barcode-dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table";
 
 interface UpdateStockDialogProps {
   product: Product;
-  onUpdateStock: (productId: string, newStock: number) => void;
+  onUpdateStock: (productId: string, variants: ProductVariant[]) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   hasWriteAccess: boolean;
 }
 
 const formSchema = z.object({
-  stock: z.coerce.number().int().min(0, { message: "Stock cannot be negative." }),
+  variants: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      stock: z.coerce.number().int().min(0, "Stock cannot be negative."),
+  }))
 });
 
 type UpdateStockFormValues = z.infer<typeof formSchema>;
 
 export function UpdateStockDialog({ product, onUpdateStock, open, onOpenChange, hasWriteAccess }: UpdateStockDialogProps) {
   const [isBarcodeOpen, setIsBarcodeOpen] = useState(false);
+  
+  const defaultVariants = useMemo(() => {
+    return product.variants?.map(v => ({ id: v.id, name: v.name, stock: v.stock })) || []
+  }, [product]);
+
   const form = useForm<UpdateStockFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { stock: product.stock },
+    defaultValues: {
+      variants: defaultVariants
+    },
+    // Rerender when defaultValues change
+    values: { variants: defaultVariants }
+  });
+
+  const { fields } = useFieldArray({
+    control: form.control,
+    name: "variants"
   });
 
   const handleSubmit = (values: UpdateStockFormValues) => {
-    onUpdateStock(product.id, values.stock);
-  };
-
-  const chartData = JSON.parse(product.historicalData || "[]");
-
-  const chartConfig = {
-    stock: {
-      label: "Stock",
-      color: "hsl(var(--primary))",
-    },
+    const updatedVariants = product.variants.map(originalVariant => {
+        const formVariant = values.variants.find(v => v.id === originalVariant.id);
+        return formVariant ? { ...originalVariant, stock: formVariant.stock } : originalVariant;
+    });
+    onUpdateStock(product.id, updatedVariants);
   };
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <div className="flex justify-between items-start">
               <div>
                 <DialogTitle>Update Stock for {product.name}</DialogTitle>
                 <DialogDescription>
-                  Enter the new stock quantity. The current stock is {product.stock}.
+                  Enter the new stock quantity for each variant.
                 </DialogDescription>
               </div>
               <Button variant="outline" size="icon" onClick={() => setIsBarcodeOpen(true)}>
@@ -69,49 +80,38 @@ export function UpdateStockDialog({ product, onUpdateStock, open, onOpenChange, 
               </Button>
             </div>
           </DialogHeader>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-              <div>
-                   <Form {...form}>
-                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="stock"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>New Stock Quantity</FormLabel>
-                            <FormControl>
-                              <Input type="number" placeholder="0" {...field} disabled={!hasWriteAccess} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" className="w-full" disabled={!hasWriteAccess}>Update Stock</Button>
-                    </form>
-                  </Form>
-              </div>
-              <div>
-                  <h4 className="font-semibold mb-2 text-center text-sm">Stock History</h4>
-                  <Card>
-                      <CardContent className="pt-6">
-                          <ChartContainer config={chartConfig} className="h-48 w-full">
-                              <LineChart accessibilityLayer data={chartData} margin={{ left: -20, right: 20, top: 5, bottom: 5 }}>
-                                  <CartesianGrid vertical={false} />
-                                  <XAxis
-                                  dataKey="date"
-                                  tickLine={false}
-                                  axisLine={false}
-                                  tickMargin={8}
-                                  tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                  />
-                                   <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                  <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
-                                  <Line dataKey="stock" type="monotone" stroke="var(--color-stock)" strokeWidth={2} dot={false} />
-                              </LineChart>
-                          </ChartContainer>
-                      </CardContent>
-                  </Card>
-              </div>
+          <div className="py-4">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <div className="max-h-80 overflow-y-auto border rounded-md">
+                   <Table>
+                    <TableHeader className="sticky top-0 bg-background">
+                      <TableRow>
+                        <TableHead>Variant</TableHead>
+                        <TableHead className="w-32">New Stock</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {fields.map((field, index) => (
+                        <TableRow key={field.id}>
+                          <TableCell className="font-medium">{field.name}</TableCell>
+                          <TableCell>
+                            <FormField
+                              control={form.control}
+                              name={`variants.${index}.stock`}
+                              render={({ field }) => (
+                                <Input type="number" {...field} disabled={!hasWriteAccess} />
+                              )}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <Button type="submit" className="w-full" disabled={!hasWriteAccess}>Update All Stock</Button>
+              </form>
+            </Form>
           </div>
         </DialogContent>
       </Dialog>

@@ -65,7 +65,7 @@ const PrintablePO = ({ purchaseOrder, supplierName, componentRef }: { purchaseOr
                      <Table>
                         <TableHeader>
                             <TableRow>
-                            <TableHead>Product</TableHead>
+                            <TableHead>Product (Variant)</TableHead>
                             <TableHead className="text-right">Quantity</TableHead>
                             <TableHead className="text-right">Cost/Item</TableHead>
                             <TableHead className="text-right">Subtotal</TableHead>

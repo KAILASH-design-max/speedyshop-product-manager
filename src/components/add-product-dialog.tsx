@@ -1,9 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ProductForm, type ProductFormValues } from "./product-form";
-import type { Product } from "@/lib/types";
+import type { Product, ProductVariant } from "@/lib/types";
 import { ScrollArea } from "./ui/scroll-area";
 
 interface AddProductDialogProps {
@@ -16,16 +17,17 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
 
   const handleSubmit = (values: ProductFormValues) => {
     const { imageUrls, ...rest } = values;
-    
-    // Convert empty strings for optional number fields to undefined
-    const originalPrice = rest.originalPrice === '' ? undefined : Number(rest.originalPrice);
-    const popularity = rest.popularity === '' ? undefined : Number(rest.popularity);
+
+    const formattedVariants = rest.variants.map(v => ({
+      ...v,
+      originalPrice: v.originalPrice === '' ? undefined : Number(v.originalPrice),
+    }));
 
     const productData = {
       ...rest,
+      variants: formattedVariants,
       images: imageUrls ? imageUrls.split('\n').filter(url => url.trim() !== '') : [],
-      originalPrice,
-      popularity,
+      popularity: rest.popularity === '' ? undefined : Number(rest.popularity),
       supplierId: rest.supplierId === 'none' ? undefined : rest.supplierId,
     };
     onAddProduct(productData);
@@ -35,14 +37,14 @@ export function AddProductDialog({ children, onAddProduct }: AddProductDialogPro
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
             Fill in the details below to add a new product to your inventory.
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[70vh] pr-6">
+        <ScrollArea className="max-h-[80vh] pr-6">
           <ProductForm onSubmit={handleSubmit} buttonText="Add Product" />
         </ScrollArea>
       </DialogContent>
