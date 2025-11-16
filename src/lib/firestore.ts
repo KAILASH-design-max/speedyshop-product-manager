@@ -1,4 +1,3 @@
-
 import {
   getFirestore,
   collection,
@@ -20,7 +19,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { app } from "./firebase";
-import type { Product, UserProfile, Order, Supplier, Festival, PurchaseOrder, Notification } from "./types";
+import type { Product, UserProfile, Order, Supplier, Festival, PurchaseOrder, Notification, Deal } from "./types";
 
 const db = getFirestore(app);
 const productsCollection = collection(db, "products");
@@ -28,6 +27,7 @@ const usersCollection = collection(db, "users");
 const ordersCollection = collection(db, "orders");
 const suppliersCollection = collection(db, "suppliers");
 const festivalsCollection = collection(db, "festivals");
+const dealsCollection = collection(db, "deals");
 const purchaseOrdersCollection = collection(db, "purchaseOrders");
 const notificationsCollection = collection(db, "notifications");
 
@@ -313,6 +313,40 @@ export async function deleteFestival(festivalId: string): Promise<void> {
   const festivalDoc = doc(db, "festivals", festivalId);
   await deleteDoc(festivalDoc);
 }
+
+// DEALS
+export async function getDeals(): Promise<Deal[]> {
+  const q = query(dealsCollection, orderBy("isActive", "desc"), orderBy("startDate", "desc"));
+  const querySnapshot = await getDocs(q);
+  const deals: Deal[] = [];
+  querySnapshot.forEach((doc) => {
+    deals.push({ id: doc.id, ...doc.data() } as Deal);
+  });
+  return deals;
+}
+
+export async function addDeal(dealData: Omit<Deal, "id">): Promise<Deal> {
+  const docRef = await addDoc(dealsCollection, {
+    ...dealData,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return { ...dealData, id: docRef.id };
+}
+
+export async function updateDeal(dealId: string, updates: Partial<Omit<Deal, "id">>): Promise<void> {
+  const dealDoc = doc(db, "deals", dealId);
+  await updateDoc(dealDoc, {
+    ...updates,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteDeal(dealId: string): Promise<void> {
+  const dealDoc = doc(db, "deals", dealId);
+  await deleteDoc(dealDoc);
+}
+
 
 // PURCHASE ORDERS
 export async function getPurchaseOrders(): Promise<PurchaseOrder[]> {

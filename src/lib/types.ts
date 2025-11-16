@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -86,6 +85,18 @@ export interface Supplier {
 }
 
 export interface Festival {
+  id: string;
+  title: string;
+  startDate: any; // Firebase Timestamp
+  endDate: any; // Firebase Timestamp
+  productIds: string[];
+  urlSlug: string;
+  isActive: boolean;
+  createdAt?: any;
+  updatedAt?: any;
+}
+
+export interface Deal {
   id: string;
   title: string;
   startDate: any; // Firebase Timestamp
