@@ -14,7 +14,7 @@ interface LowStockAlertsProps {
 export function LowStockAlerts({ products }: LowStockAlertsProps) {
   const lowStockItems = useMemo(() => {
     return products.flatMap(p => 
-      p.variants
+      (p.variants || [])
         .filter(v => v.stock <= v.lowStockThreshold)
         .map(v => ({
           id: `${p.id}-${v.id}`,
