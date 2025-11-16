@@ -1,7 +1,7 @@
 
 "use server";
 
-import { addProduct, getUserProfile, updateUserProfile, getAllUsers, adminUpdateUser, receivePurchaseOrder } from "@/lib/firestore";
+import { addProduct, getUserProfile, updateUserProfile, getAllUsers, adminUpdateUser, receivePurchaseOrder, bulkDeleteProducts, bulkUpdateProducts } from "@/lib/firestore";
 import type { Product, PurchaseOrder, UserProfile } from "@/lib/types";
 import { cookies } from "next/headers";
 import { getAuth } from "firebase-admin/auth";
@@ -109,5 +109,29 @@ export async function receivePurchaseOrderAction(purchaseOrder: PurchaseOrder): 
     } catch (error: any) {
         console.error("Error receiving purchase order:", error);
         return { success: false, error: error.message || "Failed to process purchase order reception." };
+    }
+}
+
+export async function bulkDeleteProductsAction(productIds: string[]): Promise<{ success: boolean, error?: string }> {
+    try {
+        await getAuthenticatedUserProfile(['admin', 'inventory-manager']);
+        await bulkDeleteProducts(productIds);
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+export async function bulkUpdateProductsAction(
+    productIds: string[],
+    updateType: 'deal' | 'festival',
+    targetId: string
+): Promise<{ success: boolean, error?: string }> {
+    try {
+        await getAuthenticatedUserProfile(['admin', 'inventory-manager']);
+        await bulkUpdateProducts(productIds, updateType, targetId);
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
     }
 }

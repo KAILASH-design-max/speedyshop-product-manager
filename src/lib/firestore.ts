@@ -1,3 +1,4 @@
+
 import {
   getFirestore,
   collection,
@@ -17,6 +18,7 @@ import {
   limit,
   where,
   onSnapshot,
+  arrayUnion,
 } from "firebase/firestore";
 import { app } from "./firebase";
 import type { Product, UserProfile, Order, Supplier, Festival, PurchaseOrder, Notification, Deal } from "./types";
@@ -137,6 +139,38 @@ export async function deleteProduct(productId: string): Promise<void> {
   const productDoc = doc(db, "products", productId);
   await deleteDoc(productDoc);
 }
+
+
+export async function bulkDeleteProducts(productIds: string[]): Promise<void> {
+    const batch = writeBatch(db);
+    productIds.forEach(id => {
+        const productDoc = doc(db, "products", id);
+        batch.delete(productDoc);
+    });
+    await batch.commit();
+}
+
+
+export async function bulkUpdateProducts(
+    productIds: string[],
+    updateType: 'deal' | 'festival',
+    targetId: string
+): Promise<void> {
+    const batch = writeBatch(db);
+    const targetCollection = updateType === 'deal' ? 'deals' : 'festivals';
+    const targetDocRef = doc(db, targetCollection, targetId);
+
+    // This is a simplified approach. A more robust solution might need to
+    // read the doc first if it has to handle complex array logic,
+    // but for just adding product IDs, arrayUnion is efficient.
+    batch.update(targetDocRef, {
+        productIds: arrayUnion(...productIds)
+    });
+    
+    await batch.commit();
+}
+
+
 
 // ADD a new user profile
 export async function addUser(userData: UserProfile): Promise<void> {

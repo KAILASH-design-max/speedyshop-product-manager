@@ -31,6 +31,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useDebounce } from "@/hooks/use-debounce";
 import { PrintBarcodesDialog } from "./print-barcodes-dialog";
 import { AddProductToDealDialog } from "./add-product-to-deal-dialog";
+import { BulkActionsMenu } from "./bulk-actions-menu";
 
 
 const productCategories = [
@@ -307,13 +308,22 @@ export function InventoryDashboard() {
 
           <div>
             <div className="flex flex-col md:flex-row items-center justify-between mb-4 gap-4">
-              <div className="flex items-center gap-4">
-                 <h2 className="text-2xl font-bold">All Products ({filteredProducts.length})</h2>
-                 {selectedProductIds.size > 0 && (
-                  <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
-                    <Printer className="mr-2 h-4 w-4" />
-                    Print ({selectedProductIds.size})
-                  </Button>
+              <div className="flex items-center gap-2 flex-wrap">
+                 <h2 className="text-2xl font-bold whitespace-nowrap">All Products ({filteredProducts.length})</h2>
+                 {selectedProductIds.size > 0 && hasWriteAccess && (
+                  <>
+                    <BulkActionsMenu 
+                      selectedIds={Array.from(selectedProductIds)}
+                      onActionSuccess={() => {
+                        fetchProducts();
+                        setSelectedProductIds(new Set());
+                      }}
+                    />
+                    <Button variant="outline" onClick={() => setIsPrintDialogOpen(true)}>
+                      <Printer className="mr-2 h-4 w-4" />
+                      Print ({selectedProductIds.size})
+                    </Button>
+                  </>
                 )}
                  {filteredProducts.length > 0 && (
                     <Button variant="outline" onClick={handleExportCSV}>
