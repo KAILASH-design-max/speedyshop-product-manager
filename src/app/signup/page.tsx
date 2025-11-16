@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -57,7 +58,7 @@ export default function SignUpPage() {
         jobTitle: values.jobTitle,
         department: values.department,
         status: "active",
-        photoURL: `https://avatar.vercel.sh/${values.name}.png` // Generate a default avatar
+        photoURL: "" 
       });
 
       router.push("/");

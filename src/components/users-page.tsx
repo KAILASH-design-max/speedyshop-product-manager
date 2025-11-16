@@ -119,7 +119,6 @@ export function UsersPage() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
-                          <AvatarImage src={u.photoURL ?? undefined} alt={u.name} />
                           <AvatarFallback>{getInitials(u.name)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium">{u.name}</span>

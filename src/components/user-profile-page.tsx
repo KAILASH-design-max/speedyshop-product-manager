@@ -107,7 +107,6 @@ export function UserProfilePage() {
               <div className="flex justify-between items-start">
                   <div className="flex items-center space-x-6">
                     <Avatar className="h-24 w-24 border-2 border-primary">
-                      <AvatarImage src={userProfile.photoURL ?? undefined} alt={userProfile.name} />
                       <AvatarFallback className="text-3xl">{getInitials(userProfile.name)}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">

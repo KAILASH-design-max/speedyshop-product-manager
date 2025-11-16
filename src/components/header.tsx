@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Package, LogOut, Moon, Sun, Truck, LayoutDashboard, User as UserIcon, Calendar, Users, ClipboardList, ShoppingBag, BarChart, Ticket } from "lucide-react";
@@ -93,7 +94,6 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-9 w-9">
-                        <AvatarImage src={userProfile?.photoURL ?? undefined} alt={userProfile?.name ?? "User"} />
                         <AvatarFallback>{getInitials(userProfile?.name)}</AvatarFallback>
                       </Avatar>
                     </Button>
