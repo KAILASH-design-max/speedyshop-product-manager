@@ -1,11 +1,11 @@
 
 "use client";
 
-import { MoreVertical, Edit, Trash2, Package, AlertTriangle } from "lucide-react";
+import { MoreVertical, Edit, Trash2, Package, AlertTriangle, Ticket } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
 import Image from 'next/image';
@@ -18,12 +18,13 @@ interface ProductCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onUpdateStock: () => void;
+  onAddToDeal: () => void;
   hasWriteAccess: boolean;
   isSelected: boolean;
   onSelectToggle: () => void;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWriteAccess, isSelected, onSelectToggle }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onUpdateStock, onAddToDeal, hasWriteAccess, isSelected, onSelectToggle }: ProductCardProps) {
   const isLowStock = product.stock <= product.lowStockThreshold;
   const stockPercentage = Math.min((product.stock / (product.lowStockThreshold * 2)) * 100, 100);
   
@@ -73,7 +74,9 @@ export function ProductCard({ product, onEdit, onDelete, onUpdateStock, hasWrite
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={onEdit}><Edit className="mr-2 h-4 w-4" />Edit</DropdownMenuItem>
+                  <DropdownMenuItem onClick={onEdit}><Edit className="mr-2 h-4 w-4" />Edit Details</DropdownMenuItem>
+                  <DropdownMenuItem onClick={onAddToDeal}><Ticket className="mr-2 h-4 w-4" />Add to Deal</DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive"><Trash2 className="mr-2 h-4 w-4" />Delete</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

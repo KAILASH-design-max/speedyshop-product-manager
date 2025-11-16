@@ -30,6 +30,7 @@ import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { useDebounce } from "@/hooks/use-debounce";
 import { PrintBarcodesDialog } from "./print-barcodes-dialog";
+import { AddProductToDealDialog } from "./add-product-to-deal-dialog";
 
 
 const productCategories = [
@@ -65,6 +66,7 @@ export function InventoryDashboard() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [updatingStockProduct, setUpdatingStockProduct] = useState<Product | null>(null);
+  const [productToAddToDeal, setProductToAddToDeal] = useState<Product | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -363,6 +365,7 @@ export function InventoryDashboard() {
                         setDeletingProduct(product);
                     }}
                     onUpdateStock={() => setUpdatingStockProduct(product)}
+                    onAddToDeal={() => setProductToAddToDeal(product)}
                     hasWriteAccess={hasWriteAccess}
                     isSelected={selectedProductIds.has(product.id)}
                     onSelectToggle={() => handleProductSelection(product.id)}
@@ -407,6 +410,14 @@ export function InventoryDashboard() {
           hasWriteAccess={hasWriteAccess}
         />
       )}
+
+      {productToAddToDeal && (
+        <AddProductToDealDialog
+            product={productToAddToDeal}
+            open={!!productToAddToDeal}
+            onOpenChange={() => setProductToAddToDeal(null)}
+        />
+      )}
       
       {isPrintDialogOpen && (
         <PrintBarcodesDialog
@@ -419,5 +430,3 @@ export function InventoryDashboard() {
     </div>
   );
 }
-
-    
